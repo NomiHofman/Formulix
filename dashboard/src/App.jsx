@@ -1,49 +1,44 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, lazy, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import BackgroundFX   from './components/BackgroundFX';
-import Header         from './components/Header';
-import StatsCards     from './components/StatsCards';
-import RuntimeChart   from './components/RuntimeChart';
-import SystemInsights from './components/SystemInsights';
-import MatrixTable    from './components/MatrixTable';
-import EngineRace     from './components/EngineRace';
-import MethodsExplainer from './components/MethodsExplainer';
-import FormulaTester from './components/FormulaTester';
-import AIFormulaAssistant from './components/AIFormulaAssistant';
+import BackgroundFX from './components/BackgroundFX';
+import Header from './components/Header';
+import StatsCards from './components/StatsCards';
 import LoadingOverlay from './components/LoadingOverlay';
 import { RunDataContext } from './data/RunDataContext';
-import { useRunData }    from './data/useRunData';
+import { useRunData } from './data/useRunData';
 
-/* =========================================================
-   FORMULIX · App Shell (Hebrew RTL)
-   
-   Complete benchmark dashboard featuring:
-   - LIVE DATABASE CONNECTION
-   - Performance metrics & comparison
-   - Runtime visualization
-   - Results matrix with cross-engine verification
-   - Detailed methods explanation
-   - Interactive formula tester
-   - AI-powered formula assistant (creative bonus!)
-   ========================================================= */
+const DashboardBelowFold = lazy(() => import('./DashboardBelowFold'));
+
+function BelowFoldFallback() {
+  return (
+    <div className="below-fold-fallback" aria-busy="true">
+      <span className="below-fold-fallback-text">טוען ויזואליזציות…</span>
+    </div>
+  );
+}
+
 export default function App() {
   const { data, loading, source, lastRefresh, refresh } = useRunData();
   const [aiGeneratedFormula, setAiGeneratedFormula] = useState(null);
 
   const handleFormulaFromAI = useCallback((formula) => {
     setAiGeneratedFormula(formula);
-    document.querySelector('.formula-tester')?.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'center'
+    document.querySelector('.formula-tester')?.scrollIntoView({
+      behavior: 'auto',
+      block: 'center',
     });
   }, []);
 
   const getSourceLabel = () => {
     switch (source) {
-      case 'live-db': return { text: 'מחובר לDB חי', color: '#00ff88', icon: '🟢' };
-      case 'json': return { text: 'נתונים נטענים מקובץ JSON', color: '#ffaa00', icon: '🟡' };
-      case 'mock': return { text: 'נתוני הדגמה', color: '#ff5555', icon: '🔴' };
-      default: return { text: 'טוען...', color: '#888', icon: '⏳' };
+      case 'live-db':
+        return { text: 'מחובר לDB חי', color: '#00ff88', icon: '🟢' };
+      case 'json':
+        return { text: 'נתונים נטענים מקובץ JSON', color: '#ffaa00', icon: '🟡' };
+      case 'mock':
+        return { text: 'נתוני הדגמה', color: '#ff5555', icon: '🔴' };
+      default:
+        return { text: 'טוען...', color: '#888', icon: '⏳' };
     }
   };
 
@@ -60,11 +55,13 @@ export default function App() {
       <main className={`app-shell ${loading ? 'is-loading' : ''}`}>
         <Header />
 
-        {/* Connection Status Banner */}
-        <div className="connection-banner" style={{ 
-          borderColor: sourceInfo.color,
-          background: `linear-gradient(90deg, ${sourceInfo.color}11, transparent)`
-        }}>
+        <div
+          className="connection-banner"
+          style={{
+            borderColor: sourceInfo.color,
+            background: `linear-gradient(90deg, ${sourceInfo.color}11, transparent)`,
+          }}
+        >
           <div className="connection-status">
             <span className="connection-icon">{sourceInfo.icon}</span>
             <span className="connection-text" style={{ color: sourceInfo.color }}>
@@ -80,7 +77,7 @@ export default function App() {
                 עדכון אחרון: {lastRefresh.toLocaleTimeString('he-IL')}
               </span>
             )}
-            <button className="refresh-btn" onClick={refresh} title="רענן נתונים">
+            <button type="button" className="refresh-btn" onClick={refresh} title="רענן נתונים">
               🔄 רענן
             </button>
           </div>
@@ -94,25 +91,12 @@ export default function App() {
 
         <StatsCards />
 
-        <section className="main-grid">
-          <SystemInsights />
-          <RuntimeChart />
-        </section>
-
-        <EngineRace />
-
-        <MatrixTable />
-
-        <AIFormulaAssistant onFormulaGenerated={handleFormulaFromAI} />
-
-        <FormulaTester initialFormula={aiGeneratedFormula} />
-
-        <MethodsExplainer />
-
-        <footer className="footer">
-          <span>FORMULIX · v1.0 · Dynamic Tariff Benchmark</span>
-          <span>© {new Date().getFullYear()} · Built with React · Recharts · Framer Motion · OpenAI</span>
-        </footer>
+        <Suspense fallback={<BelowFoldFallback />}>
+          <DashboardBelowFold
+            aiGeneratedFormula={aiGeneratedFormula}
+            onFormulaFromAI={handleFormulaFromAI}
+          />
+        </Suspense>
       </main>
     </RunDataContext.Provider>
   );

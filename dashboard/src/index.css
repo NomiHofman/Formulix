@@ -44,7 +44,7 @@ body,
   min-height: 100vh;
   background: var(--bg-0);
   color: var(--text);
-  font-family: 'Heebo', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family: 'Heebo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -127,6 +127,23 @@ body {
   /* Opaque shell blocks any gradient “hairline” from fixed bg layers + fixes repaint seams */
   background: var(--bg-0);
   padding: 48px 56px 72px;
+}
+
+/* Shown only while the heavy below-the-fold chunk (Recharts, matrix, etc.) downloads */
+.below-fold-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  margin: 24px 0 32px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-mute);
+}
+.below-fold-fallback-text {
+  font-size: 13px;
+  letter-spacing: 0.4px;
 }
 
 .bg-layer {
@@ -380,7 +397,7 @@ body {
 }
 
 .brand-title {
-  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-family: 'Orbitron', system-ui, sans-serif;
   font-weight: 900;
   letter-spacing: 8px;
   font-size: 38px;
@@ -974,7 +991,7 @@ body {
 }
 
 .loading-title {
-  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-family: 'Orbitron', system-ui, sans-serif;
   font-weight: 900;
   font-size: 30px;
   letter-spacing: 7px;
