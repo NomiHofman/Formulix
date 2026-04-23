@@ -132,7 +132,7 @@
 ```
 ✓ כל השיטות מייצרות תוצאות זהות
 ✓ סבילות: 1e-9 (הבדלי נקודה צפה)
-✓ נבדקו 12,000,000 תוצאות (12 נוסחאות × 1M רשומות × 4 שיטות)
+✓ נבדקו 80,000,000 תאי תוצאה (20 נוסחאות × 1M רשומות × 4 שיטות)
 ```
 
 ---
@@ -173,26 +173,30 @@
 
 ```
 Formulix/
-├── DB/                     # סקריפטי SQL
-│   ├── FormulixCreate.sql  # יצירת טבלאות ומילוי נתונים
-│   └── AddComplexFormulas.sql
+├── DB/                          # סקריפטי SQL
+│   ├── FormulixCreate.sql
+│   ├── AddComplexFormulas.sql
+│   ├── FormulixChek.sql
+│   ├── AzureSetup.sql, AzureInsertData.sql, AzureStoredProcedure.sql, AzureSampleLogs.sql
 │
-├── src/Formulix/           # קוד C#
-│   ├── Formulix.Shared/    # מודלים ו-Repository משותף
-│   ├── Formulix.SqlDynamic/    # שיטה 1
+├── src/Formulix/                # קוד C# (.NET 10)
+│   ├── Formulix.Shared/
+│   ├── Formulix.SqlDynamic/     # שיטה 1
 │   ├── Formulix.RoslynRunner/  # שיטה 2
-│   └── Formulix.AITranslator/  # שיטה 4
+│   ├── Formulix.AITranslator/  # שיטה 4
+│   └── Formulix.API/            # API ל-DB חי
 │
-├── python/formulix_sympy/  # שיטה 3
+├── python/formulix_sympy/      # שיטה 3
 │
-├── tools/                  # כלי עזר
-│   ├── compare_results.py  # סקריפט השוואה
-│   └── export_logs.py      # ייצוא לדשבורד
+├── tools/
+│   ├── compare_results.py
+│   └── export_logs.py
 │
-├── dashboard/              # ממשק משתמש
+├── dashboard/                   # React (Vite)
 │
-└── docs/                   # תיעוד
-    └── SUMMARY_REPORT.md   # דוח זה
+└── docs/
+    ├── SUMMARY_REPORT.md
+    └── SUBMISSION_CHECKLIST.md
 ```
 
 ---

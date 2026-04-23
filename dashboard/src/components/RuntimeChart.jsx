@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import {
   ResponsiveContainer, AreaChart, Area, BarChart, Bar,
@@ -59,7 +59,7 @@ function buildRadarData(summary) {
   });
 }
 
-export default function RuntimeChart() {
+function RuntimeChart() {
   const data = useData();
   const series = data?.runtimeSeries ?? [];
   const colors = data?.engineColors ?? {};
@@ -191,3 +191,5 @@ export default function RuntimeChart() {
     </motion.div>
   );
 }
+
+export default memo(RuntimeChart);

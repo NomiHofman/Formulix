@@ -31,13 +31,25 @@
 
 ---
 
+## 📮 הגשה (מבדק פיתוח רמה ג' — «מנגנון חישוב דינמי»)
+
+לפי מסמך המבחן: **קוד + סקריפטים**, **תצלומי מסך ממסד הנתונים**, **דוח מסכם**, **קישור GitHub** לריפו אישי, **מסך דיווח בענן** (קישור עובד).  
+רשימה מפורטת, מיפוי עמידה בדרישות, ורשימת צילומי DB — ב־**[`docs/SUBMISSION_CHECKLIST.md`](docs/SUBMISSION_CHECKLIST.md)**.
+
+---
+
 ## 📁 מבנה הפרויקט
 
 ```
 Formulix/
 ├── 📂 DB/                          # סקריפטי SQL
-│   ├── FormulixCreate.sql          # יצירת טבלאות + מיליון רשומות + SP
-│   └── AddComplexFormulas.sql      # נוסחאות מתקדמות (sqrt, log, pow)
+│   ├── FormulixCreate.sql          # טבלאות, 1M רשומות, 12 נוסחאות בסיס, usp_RunDynamicFormula
+│   ├── AddComplexFormulas.sql      # +8 נוסחאות (סה״כ 20) — sqrt, log, abs, power
+│   ├── FormulixChek.sql            # בדיקות / אימות
+│   ├── AzureSetup.sql              # הקמת DB בענן (אופציונלי)
+│   ├── AzureInsertData.sql
+│   ├── AzureStoredProcedure.sql
+│   └── AzureSampleLogs.sql
 │
 ├── 📂 src/Formulix/                # קוד C# (.NET 10)
 │   ├── Formulix.Shared/            # מודלים, Repository, Utilities
@@ -65,11 +77,17 @@ Formulix/
 │       │   ├── SystemInsights.jsx  # תובנות מערכת
 │       │   ├── MatrixTable.jsx     # טבלת תוצאות
 │       │   ├── MethodsExplainer.jsx # 📖 הסבר השיטות
-│       │   └── FormulaTester.jsx   # 🧪 בודק נוסחאות אינטראקטיבי
-│       └── data/
+│       │   ├── FormulaTester.jsx, AIFormulaAssistant.jsx, EngineRace.jsx
+│       │   └── (BackgroundFX, MatrixTable, LoadingOverlay, …)
+│       ├── data/
+│       │   ├── RunDataContext.jsx, useRunData.js, mockData.js, methodNames.js
+│       │   └── run-log.json (נוצר מ-export_logs, לא ב-git חובה)
+│       ├── App.jsx, main.jsx, index.css
+│       └── public/                 # אייקונים, favicon
 │
 └── 📂 docs/
-    └── SUMMARY_REPORT.md           # 📋 דוח מסכם מקצועי
+    ├── SUMMARY_REPORT.md            # 📋 דוח מסכם מקצועי
+    └── SUBMISSION_CHECKLIST.md     # רשימת קבצים מלאה להגשה
 ```
 
 ---
@@ -79,15 +97,18 @@ Formulix/
 ### שלב 1: הקמת מסד הנתונים
 
 ```sql
--- ב-SSMS או sqlcmd
--- הרץ את הסקריפט DB/FormulixCreate.sql
+-- ב-SSMS או sqlcmd — בסדר:
+-- 1) DB/FormulixCreate.sql
+-- 2) DB/AddComplexFormulas.sql   (חובה ל-20 נוסחאות כפי הדרישות)
 ```
 
-הסקריפט יוצר:
+`FormulixCreate.sql` יוצר:
 - טבלת `t_data` עם **מיליון רשומות** אקראיות
-- טבלת `t_targil` עם **12 נוסחאות** (פשוטות, מורכבות, תנאי)
+- טבלת `t_targil` עם **12 נוסחאות** בסיס (פשוטות, תנאי)
 - טבלאות `t_results` ו-`t_log`
 - Stored Procedure `usp_RunDynamicFormula`
+
+`AddComplexFormulas.sql` מוסיף **8 נוסחאות** נוספות (סה״כ **20** נוסחאות ב-`t_targil`)
 
 ### שלב 2: הרץ שיטה 1 — SQL Dynamic
 
@@ -159,6 +180,27 @@ npx vercel --prod
 2. חבר ל-Vercel
 3. הגדר `dashboard` כ-Root Directory
 4. Deploy!
+
+### שם בקישור (`formulix…vercel.app`)
+
+שם הכתובת האוטומטית נקבע מ־**שם הפרויקט** ב־Vercel (לא מ־`package.json`):
+
+1. [Vercel](https://vercel.com) → הפרויקט → **Settings** → **General**
+2. ב־**Project Name** שימי למשל `formulix` (או `formulix-dashboard`) → **Save**
+3. ב־**Domains** תראי את הדומיין המעודכן (למשל `formulix-….vercel.app`). אם השם תפוס גלובלית, Vercel יוסיף סיומת ייחודית.
+
+לכתובת בלי מקף־מספרים: **דומיין משלך** תחת **Settings → Domains**, או שירות קצר (למשל `formulix.io`).
+
+### גישה לבודקים (בלי להתחבר לחשבון Vercel שלך)
+
+אם מי שפותח את קישור הפרודקשן רואה דרישת התחברות ל־Vercel, זה בדרך כלל **Deployment Protection** (או Toolbar לחברי צוות):
+
+1. ב־[Vercel Dashboard](https://vercel.com) → בחרי את **הפרויקט** → **Settings**
+2. פתחי **Deployment Protection** (או **Security** → Deployment Protection, לפי הממשק)
+3. עבור סביבת **Production** — בחרי **Disabled** / **Public** / ביטול **Vercel Authentication** (כך שכל אחד עם ה־URL יכול לפתוח)
+4. אופציונלי: **Settings → General → Vercel Toolbar** → **Production: Off** (מסיר כלים/שכבות לבודקים)
+
+הלינק הציבורי (למשל `https://....vercel.app`) אמור לעבוד **ללא** התחברות אחרי השינוי.
 
 ---
 
@@ -250,9 +292,11 @@ npm run dev
 
 | קובץ | מטרה |
 |------|------|
+| `docs/SUBMISSION_CHECKLIST.md` | **הגשה לפי מבדק רמה ג'** — מיפוי דרישות, רשימת קוד, **תצלומי DB**, GitHub, ענן |
 | `tools/compare_results.py` | סקריפט השוואה (נדרש במבחן) |
 | `tools/export_logs.py` | ייצוא נתונים לדשבורד |
 | `docs/SUMMARY_REPORT.md` | דוח מסכם מקצועי |
+| `DB/FormulixCreate.sql` + `DB/AddComplexFormulas.sql` | סכמת DB ו-**20** נוסחאות |
 | `dashboard/src/components/MethodsExplainer.jsx` | הסבר השיטות |
 
 ---

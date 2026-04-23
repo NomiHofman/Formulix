@@ -34,6 +34,7 @@ export default function StatsCards() {
 
   return (
     <motion.section
+      key={data ? 'stats-ready' : 'stats-wait'}
       className="stats-grid"
       variants={container}
       initial="hidden"

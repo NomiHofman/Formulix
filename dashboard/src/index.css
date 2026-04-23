@@ -129,6 +129,12 @@ body {
   padding: 48px 56px 72px;
 }
 
+.deferred-section-placeholder {
+  border-radius: var(--radius-lg);
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.015);
+}
+
 .bg-layer {
   position: fixed;
   inset: 0;
@@ -1167,6 +1173,8 @@ body {
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   margin-bottom: 24px;
+  /* Prevent row stretch: peer card must not grow to full row height when neighbor expands */
+  align-items: start;
 }
 
 .method-card {

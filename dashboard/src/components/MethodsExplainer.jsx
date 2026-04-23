@@ -141,12 +141,12 @@ function MethodCard({ method }) {
   const Icon = method.icon;
   
   return (
-    <motion.div 
+    <motion.div
       className="glass method-card"
       variants={item}
       style={{ borderColor: `${method.color}33`, cursor: 'pointer' }}
-      onClick={() => setOpen(o => !o)}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      onClick={() => setOpen((o) => !o)}
+      layout={false}
     >
       {/* Header — always visible */}
       <div className="method-header">

@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/heebo": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fontsource/orbitron": "^5.2.8",
     "framer-motion": "^11.3.19",
     "lucide-react": "^0.441.0",
     "react": "^18.3.1",
