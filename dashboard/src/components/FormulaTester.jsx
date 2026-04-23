@@ -5,7 +5,7 @@ import {
   Calculator, CheckCircle2, AlertCircle, Lightbulb,
   Bot
 } from 'lucide-react';
-import { scaleIn, SCROLL_VIEWPORT } from '../utils/scrollAnimations';
+import { scaleIn } from '../utils/scrollAnimations';
 
 /* =========================================================
    FormulaTester (Hebrew)
@@ -100,8 +100,7 @@ export default function FormulaTester({ initialFormula }) {
       className="glass formula-tester"
       variants={scaleIn}
       initial="hidden"
-      whileInView="show"
-      viewport={SCROLL_VIEWPORT}
+      animate="show"
     >
       <div className="panel-header">
         <div>

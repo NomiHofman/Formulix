@@ -9,7 +9,6 @@ import {
   revealStaggerStrong,
   staggerChildBig,
   fadeUp,
-  SCROLL_VIEWPORT,
 } from '../utils/scrollAnimations';
 
 const methods = [
@@ -249,8 +248,7 @@ export default function MethodsExplainer() {
       className="methods-section"
       variants={fadeUp}
       initial="hidden"
-      whileInView="show"
-      viewport={SCROLL_VIEWPORT}
+      animate="show"
     >
       <div className="methods-header">
         <div>
@@ -267,9 +265,6 @@ export default function MethodsExplainer() {
       <motion.div 
         className="methods-grid"
         variants={revealStaggerStrong}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.15 }}
       >
         {methods.map((method) => (
           <MethodCard key={method.id} method={method} />
@@ -280,8 +275,7 @@ export default function MethodsExplainer() {
         className="glass recommendation-box"
         variants={fadeUp}
         initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.3 }}
+        animate="show"
       >
         <div className="recommendation-content">
           <div className="recommendation-icon">

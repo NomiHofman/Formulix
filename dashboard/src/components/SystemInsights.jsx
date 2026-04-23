@@ -3,7 +3,7 @@ import {
   BrainCircuit, Gauge, Zap, ShieldCheck, HardDrive, Trophy,
 } from 'lucide-react';
 import { useData } from '../data/RunDataContext';
-import { scaleIn, SCROLL_VIEWPORT } from '../utils/scrollAnimations';
+import { scaleIn } from '../utils/scrollAnimations';
 
 /* =========================================================
    SystemInsights (Hebrew RTL)
@@ -38,8 +38,7 @@ export default function SystemInsights() {
       className="glass panel"
       variants={scaleIn}
       initial="hidden"
-      whileInView="show"
-      viewport={SCROLL_VIEWPORT}
+      animate="show"
     >
       <div className="panel-header">
         <div>
@@ -59,13 +58,12 @@ export default function SystemInsights() {
         <div className="insight-hero-desc">{bestMethod.summary ?? ''}</div>
       </div>
 
-      {/* KPI rows - icon on right, text in middle, value on left */}
+      {/* KPI rows - icon on right, text in middle, value on left.
+          No initial/whileInView here: variants are inherited from the aside parent
+          so children stagger as soon as the panel itself reveals. */}
       <motion.div
         className="insight-list"
         variants={container}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.2 }}
       >
         {rows.map((r) => {
           const Icon = ICONS[r.icon] ?? Gauge;

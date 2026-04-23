@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import FormulixLogo from './FormulixLogo';
 
 /* Minimal loader — no top-style progress bar (avoids “stuck” cyan line artifacts). */
 export default function LoadingOverlay() {
@@ -18,15 +18,16 @@ export default function LoadingOverlay() {
           <motion.div
             className="loading-icon"
             animate={{
-              scale: [1, 1.12, 1],
+              scale: [1, 1.08, 1],
+              rotate: [0, 6, -6, 0],
             }}
             transition={{
-              duration: 1.6,
+              duration: 2.4,
               repeat: Infinity,
               ease: 'easeInOut',
             }}
           >
-            <Sparkles size={32} strokeWidth={2.2} />
+            <FormulixLogo size={42} idSuffix="-loader" />
           </motion.div>
         </div>
 
