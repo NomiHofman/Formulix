@@ -6,6 +6,7 @@ import StatsCards     from './components/StatsCards';
 import RuntimeChart   from './components/RuntimeChart';
 import SystemInsights from './components/SystemInsights';
 import MatrixTable    from './components/MatrixTable';
+import EngineRace     from './components/EngineRace';
 import MethodsExplainer from './components/MethodsExplainer';
 import FormulaTester from './components/FormulaTester';
 import AIFormulaAssistant from './components/AIFormulaAssistant';
@@ -97,6 +98,8 @@ export default function App() {
           <SystemInsights />
           <RuntimeChart />
         </section>
+
+        <EngineRace />
 
         <MatrixTable />
 

@@ -1,11 +1,48 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Activity } from 'lucide-react';
+import { Activity } from 'lucide-react';
 
-/* =========================================================
-   Header (Hebrew RTL)
-   Logo and tagline stay in English (exam requirement).
-   Icon on far right, then brand name.
-   ========================================================= */
+function FormulixLogo({ size = 34 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Sigma shape ∑ — the core symbol */}
+      <path
+        d="M28 7 L12 7 L20 20 L12 33 L28 33"
+        stroke="url(#sigmaGrad)"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      {/* Spark nodes on the sigma corners */}
+      <circle cx="28" cy="7" r="2.5" fill="url(#nodeGrad1)" />
+      <circle cx="20" cy="20" r="3" fill="url(#nodeGrad2)" />
+      <circle cx="28" cy="33" r="2.5" fill="url(#nodeGrad3)" />
+      {/* Tiny connecting sparks */}
+      <circle cx="12" cy="7" r="1.5" fill="#ff007a" opacity="0.7" />
+      <circle cx="12" cy="33" r="1.5" fill="#00e5ff" opacity="0.7" />
+      <defs>
+        <linearGradient id="sigmaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ff007a" />
+          <stop offset="50%" stopColor="#8a2bff" />
+          <stop offset="100%" stopColor="#00e5ff" />
+        </linearGradient>
+        <radialGradient id="nodeGrad1" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="100%" stopColor="#ff007a" />
+        </radialGradient>
+        <radialGradient id="nodeGrad2" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="100%" stopColor="#8a2bff" />
+        </radialGradient>
+        <radialGradient id="nodeGrad3" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="100%" stopColor="#00e5ff" />
+        </radialGradient>
+      </defs>
+    </svg>
+  );
+}
+
 export default function Header() {
   return (
     <motion.header
@@ -15,9 +52,13 @@ export default function Header() {
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       <div className="brand">
-        <div className="brand-badge">
-          <Sparkles size={28} strokeWidth={2} />
-        </div>
+        <motion.div
+          className="brand-badge"
+          whileHover={{ rotate: [0, -8, 8, 0], scale: 1.1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <FormulixLogo size={32} />
+        </motion.div>
         <div className="brand-text">
           <h1 className="brand-title">FORMULIX</h1>
           <p className="brand-tagline">

@@ -1,15 +1,10 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Database, Code2, Sparkles, Brain, 
   Zap, Server, Cpu, ArrowLeftRight,
-  CheckCircle2, Clock, MemoryStick
+  CheckCircle2, Clock, ChevronDown
 } from 'lucide-react';
-
-/* =========================================================
-   MethodsExplainer (Hebrew)
-   Detailed explanation of each calculation method as
-   required by the exam: "יש להוסיף הסבר קצר על כל שיטה"
-   ========================================================= */
 
 const methods = [
   {
@@ -142,16 +137,18 @@ const item = {
 };
 
 function MethodCard({ method }) {
+  const [open, setOpen] = useState(false);
   const Icon = method.icon;
   
   return (
     <motion.div 
       className="glass method-card"
       variants={item}
+      style={{ borderColor: `${method.color}33`, cursor: 'pointer' }}
+      onClick={() => setOpen(o => !o)}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      style={{ borderColor: `${method.color}33` }}
     >
-      {/* Header */}
+      {/* Header — always visible */}
       <div className="method-header">
         <div className="method-icon" style={{ background: `${method.color}22`, color: method.color }}>
           <Icon size={24} strokeWidth={1.8} />
@@ -160,70 +157,91 @@ function MethodCard({ method }) {
           <h3 className="method-name" style={{ color: method.color }}>{method.name}</h3>
           <span className="method-name-en">{method.nameEn}</span>
         </div>
-        {method.recommendation && (
-          <div className="method-badge recommended">
-            <CheckCircle2 size={14} />
-            מומלץ
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {method.recommendation && (
+            <div className="method-badge recommended">
+              <CheckCircle2 size={14} />
+              מומלץ
+            </div>
+          )}
+          <div className="method-stat" style={{ margin: 0 }}>
+            <Clock size={14} />
+            <span>{method.avgTime}</span>
           </div>
-        )}
+          <motion.div
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ color: 'var(--text-mute)', display: 'grid', placeItems: 'center' }}
+          >
+            <ChevronDown size={18} />
+          </motion.div>
+        </div>
       </div>
 
-      {/* Description */}
       <p className="method-description">{method.description}</p>
 
-      {/* How it works */}
-      <div className="method-section">
-        <h4><Zap size={14} /> איך זה עובד</h4>
-        <ol className="method-steps">
-          {method.howItWorks.map((step, i) => (
-            <li key={i}>{step}</li>
-          ))}
-        </ol>
-      </div>
+      {/* Expandable detail */}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: 'easeInOut' }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div className="method-section">
+              <h4><Zap size={14} /> איך זה עובד</h4>
+              <ol className="method-steps">
+                {method.howItWorks.map((step, i) => (
+                  <li key={i}>{step}</li>
+                ))}
+              </ol>
+            </div>
 
-      {/* Pros & Cons */}
-      <div className="method-pros-cons">
-        <div className="method-pros">
-          <h4 style={{ color: '#22ff88' }}>יתרונות</h4>
-          <ul>
-            {method.pros.map((pro, i) => (
-              <li key={i}><CheckCircle2 size={12} /> {pro}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="method-cons">
-          <h4 style={{ color: '#ff6b6b' }}>חסרונות</h4>
-          <ul>
-            {method.cons.map((con, i) => (
-              <li key={i}><span className="x-mark">×</span> {con}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
+            <div className="method-pros-cons">
+              <div className="method-pros">
+                <h4 style={{ color: '#22ff88' }}>יתרונות</h4>
+                <ul>
+                  {method.pros.map((pro, i) => (
+                    <li key={i}><CheckCircle2 size={12} /> {pro}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="method-cons">
+                <h4 style={{ color: '#ff6b6b' }}>חסרונות</h4>
+                <ul>
+                  {method.cons.map((con, i) => (
+                    <li key={i}><span className="x-mark">×</span> {con}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
 
-      {/* Tech Stack */}
-      <div className="method-section">
-        <h4><Server size={14} /> טכנולוגיות</h4>
-        <div className="method-tags">
-          {method.techStack.map((tech, i) => (
-            <span key={i} className="method-tag" style={{ borderColor: `${method.color}55` }}>
-              {tech}
-            </span>
-          ))}
-        </div>
-      </div>
+            <div className="method-section">
+              <h4><Server size={14} /> טכנולוגיות</h4>
+              <div className="method-tags">
+                {method.techStack.map((tech, i) => (
+                  <span key={i} className="method-tag" style={{ borderColor: `${method.color}55` }}>
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-      {/* Stats */}
-      <div className="method-stats">
-        <div className="method-stat">
-          <Cpu size={14} />
-          <span>מורכבות: {method.complexity}</span>
-        </div>
-        <div className="method-stat">
-          <Clock size={14} />
-          <span>זמן ממוצע: {method.avgTime}</span>
-        </div>
-      </div>
+            <div className="method-stats">
+              <div className="method-stat">
+                <Cpu size={14} />
+                <span>מורכבות: {method.complexity}</span>
+              </div>
+              <div className="method-stat">
+                <Clock size={14} />
+                <span>זמן ממוצע: {method.avgTime}</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -243,7 +261,7 @@ export default function MethodsExplainer() {
             השוואת שיטות החישוב
           </h2>
           <p className="methods-subtitle">
-            ניתוח מעמיק של ארבע השיטות לחישוב נוסחאות דינמיות על מיליון רשומות
+            ניתוח מעמיק של ארבע השיטות — לחץ על כרטיס לפירוט מלא
           </p>
         </div>
       </div>
@@ -259,7 +277,6 @@ export default function MethodsExplainer() {
         ))}
       </motion.div>
 
-      {/* Recommendation Summary */}
       <motion.div 
         className="glass recommendation-box"
         initial={{ opacity: 0, y: 20 }}
