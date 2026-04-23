@@ -201,23 +201,28 @@ export function useRunData() {
 
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-    // Try 1: Live API — only when running locally (skip on deployed builds)
+    // Try 1: Live API — only when running locally (skip on deployed builds).
+    // Cold-start of Azure SQL via the .NET API can take 5-10 seconds, so use a generous timeout.
     if (isLocal) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
-        
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+        console.log(`[useRunData] Trying live API at ${API_URL}/api/summary (timeout 12s)...`);
         const response = await fetch(`${API_URL}/api/summary`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' },
           signal: controller.signal,
         });
-        
+
         clearTimeout(timeoutId);
-        
-        if (response.ok) {
+
+        if (!response.ok) {
+          console.warn(`[useRunData] API returned HTTP ${response.status}; falling back to JSON.`);
+        } else {
           const json = await response.json();
           const { dataCount, formulaCount, formulas, logs, summary, source: apiSource } = json;
+          console.log(`[useRunData] Live API OK — dataCount=${dataCount}, methods=${Object.keys(summary || {}).length}, logs=${logs?.length ?? 0}`);
 
           setData({
             topStats: buildTopStats(dataCount, summary, formulaCount),
@@ -245,7 +250,10 @@ export function useRunData() {
           return;
         }
       } catch (apiError) {
-        console.log('API not available, trying JSON fallback...', apiError.name);
+        const reason = apiError.name === 'AbortError'
+          ? 'timed out after 12s (Azure SQL cold-start?)'
+          : apiError.message || apiError.name;
+        console.warn(`[useRunData] Live API unavailable: ${reason}. Falling back to /run-log.json.`);
       }
     }
 
