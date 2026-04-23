@@ -16,8 +16,17 @@ import {
 import { friendlyName } from './methodNames';
 
 // ─── API Configuration ────────────────────────────────────────────────────────
-// Set API URL via environment variable or default to local
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Set API URL via environment variable, otherwise probe a list of common
+// development ports (default Kestrel + Visual Studio HTTPS launch profiles).
+const ENV_API_URL = import.meta.env.VITE_API_URL;
+const API_CANDIDATES = ENV_API_URL
+  ? [ENV_API_URL]
+  : [
+      'http://localhost:5000',
+      'https://localhost:5001',
+      'http://localhost:55994',
+      'https://localhost:55995',
+    ];
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -202,59 +211,76 @@ export function useRunData() {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
     // Try 1: Live API — only when running locally (skip on deployed builds).
-    // Cold-start of Azure SQL via the .NET API can take 5-10 seconds, so use a generous timeout.
+    // We probe a list of candidate URLs (default Kestrel ports + Visual Studio
+    // randomized HTTPS profiles). For each candidate we first ping /api/health
+    // with a short 1.5s timeout — if it answers, we trust it and call /api/summary
+    // with a longer 25s timeout (enough for an Azure SQL cold-start).
     if (isLocal) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 12000);
+      let liveJson = null;
+      let liveSource = 'live-db';
 
-        console.log(`[useRunData] Trying live API at ${API_URL}/api/summary (timeout 12s)...`);
-        const response = await fetch(`${API_URL}/api/summary`, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          console.warn(`[useRunData] API returned HTTP ${response.status}; falling back to JSON.`);
-        } else {
-          const json = await response.json();
-          const { dataCount, formulaCount, formulas, logs, summary, source: apiSource } = json;
-          console.log(`[useRunData] Live API OK — dataCount=${dataCount}, methods=${Object.keys(summary || {}).length}, logs=${logs?.length ?? 0}`);
-
-          setData({
-            topStats: buildTopStats(dataCount, summary, formulaCount),
-            runtimeSeries: buildRuntimeSeries(summary, formulaCount),
-            engineColors: {
-              ...engineColors,
-              ...Object.fromEntries(
-                Object.keys(summary || {}).map((m, i) => [
-                  m,
-                  ['#0084ff', '#ff007a', '#8a2bff', '#00e5ff', '#9dff00', '#ffb300'][i % 6],
-                ])
-              ),
-            },
-            insights: buildInsights(summary),
-            tResult: buildTResult(formulas, summary, logs),
-            logs,
-            summary,
-            exportedAt: json.exportedAt,
-            usingMock: false,
+      for (const baseUrl of API_CANDIDATES) {
+        try {
+          const healthCtrl = new AbortController();
+          const healthTimer = setTimeout(() => healthCtrl.abort(), 1500);
+          const healthResp = await fetch(`${baseUrl}/api/health`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+            signal: healthCtrl.signal,
           });
-          setUsingMock(false);
-          setSource(apiSource || 'live-db');
-          setLastRefresh(new Date());
-          setLoading(false);
-          return;
+          clearTimeout(healthTimer);
+          if (!healthResp.ok) continue;
+
+          console.log(`[useRunData] API alive at ${baseUrl} → fetching /api/summary (timeout 25s)…`);
+          const sumCtrl = new AbortController();
+          const sumTimer = setTimeout(() => sumCtrl.abort(), 25000);
+          const sumResp = await fetch(`${baseUrl}/api/summary`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+            signal: sumCtrl.signal,
+          });
+          clearTimeout(sumTimer);
+          if (!sumResp.ok) continue;
+
+          liveJson = await sumResp.json();
+          liveSource = liveJson.source || 'live-db';
+          break;
+        } catch (probeErr) {
+          // silent — try next candidate
         }
-      } catch (apiError) {
-        const reason = apiError.name === 'AbortError'
-          ? 'timed out after 12s (Azure SQL cold-start?)'
-          : apiError.message || apiError.name;
-        console.warn(`[useRunData] Live API unavailable: ${reason}. Falling back to /run-log.json.`);
       }
+
+      if (liveJson) {
+        const { dataCount, formulaCount, formulas, logs, summary } = liveJson;
+        console.log(`[useRunData] Live API OK — dataCount=${dataCount}, methods=${Object.keys(summary || {}).length}, logs=${logs?.length ?? 0}`);
+
+        setData({
+          topStats: buildTopStats(dataCount, summary, formulaCount),
+          runtimeSeries: buildRuntimeSeries(summary, formulaCount),
+          engineColors: {
+            ...engineColors,
+            ...Object.fromEntries(
+              Object.keys(summary || {}).map((m, i) => [
+                m,
+                ['#0084ff', '#ff007a', '#8a2bff', '#00e5ff', '#9dff00', '#ffb300'][i % 6],
+              ])
+            ),
+          },
+          insights: buildInsights(summary),
+          tResult: buildTResult(formulas, summary, logs),
+          logs,
+          summary,
+          exportedAt: liveJson.exportedAt,
+          usingMock: false,
+        });
+        setUsingMock(false);
+        setSource(liveSource);
+        setLastRefresh(new Date());
+        setLoading(false);
+        return;
+      }
+
+      console.warn('[useRunData] No live API responded on any candidate port. Falling back to /run-log.json.');
     }
 
     // Try 2: Static JSON file (fallback)

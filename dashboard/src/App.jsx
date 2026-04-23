@@ -23,12 +23,27 @@ export default function App() {
     });
   }, []);
 
+  const isLocalHost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1');
+
   const getSourceLabel = () => {
     switch (source) {
       case 'live-db':
-        return { text: 'מחובר לDB חי', color: '#00ff88', icon: '🟢' };
+        return { text: 'מחובר ל-DB חי', color: '#00ff88', icon: '🟢' };
       case 'json':
-        return { text: 'נתונים נטענים מקובץ JSON', color: '#ffaa00', icon: '🟡' };
+        return isLocalHost
+          ? {
+              text: 'API לא מגיב — נתונים מ-snapshot מקומי',
+              color: '#ffaa00',
+              icon: '🟡',
+            }
+          : {
+              text: 'מחובר לנתוני בנצ׳מרק (snapshot מה-DB החי)',
+              color: '#00ff88',
+              icon: '🟢',
+            };
       case 'mock':
         return { text: 'נתוני הדגמה', color: '#ff5555', icon: '🔴' };
       default:
@@ -37,6 +52,7 @@ export default function App() {
   };
 
   const sourceInfo = getSourceLabel();
+  const isLiveLike = source === 'live-db' || (source === 'json' && !isLocalHost);
 
   return (
     <RunDataContext.Provider value={data}>
@@ -63,6 +79,11 @@ export default function App() {
             </span>
             {source === 'live-db' && (
               <span className="auto-refresh-badge">רענון אוטומטי כל 30 שניות</span>
+            )}
+            {source === 'json' && !isLocalHost && data?.exportedAt && (
+              <span className="auto-refresh-badge">
+                snapshot: {new Date(data.exportedAt).toLocaleString('he-IL')}
+              </span>
             )}
           </div>
           <div className="connection-actions">
