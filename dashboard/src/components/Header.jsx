@@ -1,10 +1,8 @@
-import { motion } from 'framer-motion';
 import { Activity } from 'lucide-react';
 
 function FormulixLogo({ size = 34 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Sigma shape ∑ — the core symbol */}
       <path
         d="M28 7 L12 7 L20 20 L12 33 L28 33"
         stroke="url(#sigmaGrad)"
@@ -13,11 +11,9 @@ function FormulixLogo({ size = 34 }) {
         strokeLinejoin="round"
         fill="none"
       />
-      {/* Spark nodes on the sigma corners */}
       <circle cx="28" cy="7" r="2.5" fill="url(#nodeGrad1)" />
       <circle cx="20" cy="20" r="3" fill="url(#nodeGrad2)" />
       <circle cx="28" cy="33" r="2.5" fill="url(#nodeGrad3)" />
-      {/* Tiny connecting sparks */}
       <circle cx="12" cy="7" r="1.5" fill="#ff007a" opacity="0.7" />
       <circle cx="12" cy="33" r="1.5" fill="#00e5ff" opacity="0.7" />
       <defs>
@@ -45,20 +41,11 @@ function FormulixLogo({ size = 34 }) {
 
 export default function Header() {
   return (
-    <motion.header
-      className="header"
-      initial={{ opacity: 0, y: -16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
+    <header className="header">
       <div className="brand">
-        <motion.div
-          className="brand-badge"
-          whileHover={{ rotate: [0, -8, 8, 0], scale: 1.1 }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="brand-badge">
           <FormulixLogo size={32} />
-        </motion.div>
+        </div>
         <div className="brand-text">
           <h1 className="brand-title">FORMULIX</h1>
           <p className="brand-tagline">
@@ -72,6 +59,6 @@ export default function Header() {
         <Activity size={13} strokeWidth={2.2} />
         <span>פעיל&nbsp;·&nbsp;מנועי החישוב מסונכרנים</span>
       </div>
-    </motion.header>
+    </header>
   );
 }

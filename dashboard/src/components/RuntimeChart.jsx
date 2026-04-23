@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import {
   ResponsiveContainer, AreaChart, Area, BarChart, Bar,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -73,12 +72,7 @@ export default function RuntimeChart() {
   const radarData = buildRadarData(summary);
 
   return (
-    <motion.div
-      className="glass panel"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, delay: 0.25, ease: 'easeOut' }}
-    >
+    <div className="glass panel">
       <div className="panel-header">
         <div>
           <div className="panel-title">
@@ -123,7 +117,7 @@ export default function RuntimeChart() {
       )}
 
       <div style={{ width: '100%', height: 340, direction: 'ltr' }}>
-        <ResponsiveContainer>
+        <ResponsiveContainer debounce={80}>
           {chartType === 'area' ? (
             <AreaChart data={series} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
               <defs>
@@ -138,13 +132,13 @@ export default function RuntimeChart() {
               <XAxis dataKey="batch" tickLine={false} axisLine={false} dy={8} />
               <YAxis tickLine={false} axisLine={false} tickFormatter={(v) => `${v}s`} width={50} />
               <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.15)', strokeWidth: 1 }} />
-              {engines.map((e, i) => (
+              {engines.map((e) => (
                 <Area
                   key={e} type="monotone" dataKey={e}
                   stroke={colors[e]} strokeWidth={2.2}
                   fill={`url(#grad-${e.replace(/\s/g, '')})`}
                   dot={false} activeDot={{ r: 5, strokeWidth: 0 }}
-                  isAnimationActive animationBegin={i * 180} animationDuration={1100}
+                  isAnimationActive={false}
                 />
               ))}
             </AreaChart>
@@ -154,11 +148,11 @@ export default function RuntimeChart() {
               <XAxis dataKey="batch" tickLine={false} axisLine={false} dy={8} />
               <YAxis tickLine={false} axisLine={false} tickFormatter={(v) => `${v}s`} width={50} />
               <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-              {engines.map((e, i) => (
+              {engines.map((e) => (
                 <Bar
                   key={e} dataKey={e} fill={colors[e]}
                   radius={[4, 4, 0, 0]} opacity={0.85}
-                  isAnimationActive animationBegin={i * 120} animationDuration={800}
+                  isAnimationActive={false}
                 />
               ))}
             </BarChart>
@@ -172,6 +166,7 @@ export default function RuntimeChart() {
                   key={e} name={friendlyName(e)} dataKey={e}
                   stroke={colors[e]} fill={colors[e]} fillOpacity={0.15}
                   strokeWidth={2}
+                  isAnimationActive={false}
                 />
               ))}
               <RLegend
@@ -182,6 +177,6 @@ export default function RuntimeChart() {
           )}
         </ResponsiveContainer>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -124,6 +124,8 @@ body {
   position: relative;
   min-height: 100vh;
   isolation: isolate;
+  /* Opaque shell blocks any gradient “hairline” from fixed bg layers + fixes repaint seams */
+  background: var(--bg-0);
   padding: 48px 56px 72px;
 }
 
@@ -138,17 +140,8 @@ body {
   transform: translateZ(0);
 }
 
-/* Masks 1px GPU “hairline” from blurred gradients (cyan/blue) at the viewport top */
-.bg-layer::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 4px;
-  background: var(--bg-0);
-  z-index: 6;
-  pointer-events: none;
+.bg-layer--static {
+  background: var(--bg-0) !important;
 }
 
 .bg-aurora {
@@ -347,26 +340,7 @@ body {
   overflow: hidden;
 }
 
-.glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    140deg,
-    rgba(255, 255, 255, 0.18),
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 70%,
-    rgba(255, 255, 255, 0.08)
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
-}
+/* Dropped ::before “shine” mask (extra compositing on every .glass card = scroll cost) */
 
 /* =========================================================
    Header / Brand
@@ -401,27 +375,8 @@ body {
   place-items: center;
   background: linear-gradient(135deg, rgba(255, 0, 122, 0.3), rgba(0, 132, 255, 0.3));
   border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    0 0 30px rgba(255, 0, 122, 0.4),
-    0 0 60px rgba(0, 132, 255, 0.25),
-    inset 0 0 25px rgba(138, 43, 255, 0.2);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
   color: #fff;
-  animation: badgePulse 3s ease-in-out infinite;
-}
-
-@keyframes badgePulse {
-  0%, 100% {
-    box-shadow: 
-      0 0 30px rgba(255, 0, 122, 0.4),
-      0 0 60px rgba(0, 132, 255, 0.25),
-      inset 0 0 25px rgba(138, 43, 255, 0.2);
-  }
-  50% {
-    box-shadow: 
-      0 0 40px rgba(255, 0, 122, 0.5),
-      0 0 80px rgba(0, 132, 255, 0.35),
-      inset 0 0 30px rgba(138, 43, 255, 0.3);
-  }
 }
 
 .brand-title {
@@ -439,29 +394,11 @@ body {
     #0084ff 75%,
     #00e5ff 100%
   );
-  background-size: 200% 100%;
   -webkit-background-clip: text;
           background-clip: text;
   color: transparent;
-  text-shadow:
-    0 0 30px rgba(255, 0, 122, 0.6),
-    0 0 60px rgba(0, 132, 255, 0.4),
-    0 0 90px rgba(138, 43, 255, 0.3);
-  filter: drop-shadow(0 0 20px rgba(255, 0, 122, 0.25));
-  animation: brandGlow 4s ease-in-out infinite;
   direction: ltr;
   unicode-bidi: bidi-override;
-}
-
-@keyframes brandGlow {
-  0%, 100% {
-    background-position: 0% 50%;
-    filter: drop-shadow(0 0 20px rgba(255, 0, 122, 0.25));
-  }
-  50% {
-    background-position: 100% 50%;
-    filter: drop-shadow(0 0 30px rgba(0, 132, 255, 0.35));
-  }
 }
 
 .brand-tagline {
@@ -569,10 +506,10 @@ body {
 .stat-delta strong { color: #fff; font-weight: 600; }
 
 /* Colored glows per card */
-.glow-pink   { box-shadow: var(--shadow-card), 0 0 50px -10px rgba(255, 0, 122, 0.55); }
-.glow-blue   { box-shadow: var(--shadow-card), 0 0 50px -10px rgba(0, 132, 255, 0.55); }
-.glow-violet { box-shadow: var(--shadow-card), 0 0 50px -10px rgba(138, 43, 255, 0.55); }
-.glow-cyan   { box-shadow: var(--shadow-card), 0 0 50px -10px rgba(0, 229, 255, 0.55); }
+.glow-pink   { box-shadow: var(--shadow-card); border-color: rgba(255, 0, 122, 0.22); }
+.glow-blue   { box-shadow: var(--shadow-card); border-color: rgba(0, 132, 255, 0.22); }
+.glow-violet { box-shadow: var(--shadow-card); border-color: rgba(138, 43, 255, 0.22); }
+.glow-cyan   { box-shadow: var(--shadow-card); border-color: rgba(0, 229, 255, 0.2); }
 
 .icon-pink   { color: var(--neon-pink); }
 .icon-blue   { color: var(--neon-blue); }
@@ -2264,16 +2201,7 @@ body {
 
 /* Smooth icon transitions */
 .stat-icon {
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover .stat-icon {
-  transform: scale(1.1);
-  box-shadow: 0 0 20px currentColor;
-}
-
-.stat-card:hover .stat-icon svg {
-  animation: iconBounce 0.6s ease;
+  transition: color 0.2s ease;
 }
 
 /* Refresh button spin on hover */
@@ -2285,18 +2213,14 @@ body {
   transform: scale(0.95);
 }
 
-/* Method card professional hover */
+/* Method card — avoid layout shift on scroll/hover (GPU-heavy) */
 .method-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .method-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card), 0 15px 35px rgba(0, 0, 0, 0.25);
-}
-
-.method-card:hover .method-icon svg {
-  animation: iconPulse 0.8s ease;
+  border-color: rgba(0, 132, 255, 0.2);
+  box-shadow: var(--shadow-card);
 }
 
 /* Formula cell hover highlight */
@@ -2313,17 +2237,6 @@ body {
   color: var(--neon-pink);
 }
 
-/* Staggered card entrances */
-.stat-card:nth-child(1) { animation-delay: 0s; }
-.stat-card:nth-child(2) { animation-delay: 0.08s; }
-.stat-card:nth-child(3) { animation-delay: 0.16s; }
-.stat-card:nth-child(4) { animation-delay: 0.24s; }
-
-/* AI assistant icon animation */
-.ai-assistant .panel-title svg {
-  animation: iconBounce 2s ease-in-out infinite;
-}
-
 /* Loading spinner for buttons */
 @keyframes spin {
   from { transform: rotate(0deg); }
@@ -2333,11 +2246,6 @@ body {
 .ai-send-btn:disabled svg,
 .tester-run-btn:disabled svg {
   animation: spin 1s linear infinite;
-}
-
-/* Chart legend dot pulse */
-.legend-dot {
-  animation: iconPulse 2s ease-in-out infinite;
 }
 
 /* Success badge glow */
@@ -2356,19 +2264,4 @@ body {
 
 .insight-row:hover {
   background: rgba(255, 255, 255, 0.04);
-  transform: translateX(-4px);
-}
-
-.insight-row:hover .insight-row-icon svg {
-  animation: iconPulse 0.5s ease;
-}
-
-/* Connection banner pulse when live */
-@keyframes livePulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.auto-refresh-badge {
-  animation: livePulse 2s ease-in-out infinite;
 }
