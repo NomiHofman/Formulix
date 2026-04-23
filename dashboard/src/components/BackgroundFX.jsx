@@ -4,7 +4,7 @@ const SHAPES = ['✦', '◆', '●', '○', '△', '◇', '⬡', '✧', '+', '×
 
 function FloatingShapes() {
   const items = useMemo(() =>
-    Array.from({ length: 28 }, (_, i) => {
+    Array.from({ length: 18 }, (_, i) => {
       const colors = ['#ff007a', '#0084ff', '#8a2bff', '#00e5ff', '#ffffff'];
       return {
         id: i,
@@ -44,7 +44,7 @@ function FloatingShapes() {
 
 function DotField() {
   const items = useMemo(() =>
-    Array.from({ length: 35 }, (_, i) => ({
+    Array.from({ length: 20 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
@@ -87,9 +87,9 @@ export default function BackgroundFX() {
     let mouse = { x: -1000, y: -1000 };
 
     const COLORS = ['#ff007a', '#0084ff', '#8a2bff', '#00e5ff'];
-    const COUNT = 60;
-    const CONNECT_DIST = 140;
-    const MOUSE_RADIUS = 180;
+    const COUNT = 40;
+    const CONNECT_DIST = 120;
+    const MOUSE_RADIUS = 160;
 
     function resize() {
       canvas.width = window.innerWidth;
@@ -137,10 +137,9 @@ export default function BackgroundFX() {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = p.color;
+        ctx.globalAlpha = 0.8;
         ctx.fill();
-        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
 
         for (let j = i + 1; j < particles.length; j++) {
           const q = particles[j];

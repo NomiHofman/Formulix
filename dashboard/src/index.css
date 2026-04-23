@@ -41,10 +41,9 @@ body,
 #root {
   margin: 0;
   padding: 0;
-  min-height: 100%;
+  min-height: 100vh;
   background: var(--bg-0);
   color: var(--text);
-  /* Hebrew-friendly font stack with Heebo as primary */
   font-family: 'Heebo', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   font-size: 14px;
   line-height: 1.6;
@@ -52,6 +51,11 @@ body,
   -moz-osx-font-smoothing: grayscale;
   direction: rtl;
   text-align: right;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -129,6 +133,8 @@ body {
   overflow: hidden;
   pointer-events: none;
   background: var(--bg-0);
+  contain: strict;
+  transform: translateZ(0);
 }
 
 .bg-aurora {
@@ -144,6 +150,8 @@ body {
   animation: auroraShift 12s ease-in-out infinite alternate;
   filter: blur(80px);
   opacity: 1;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .bg-aurora-2 {
@@ -158,6 +166,8 @@ body {
   animation: auroraShift2 15s ease-in-out infinite alternate;
   filter: blur(100px);
   opacity: 0.8;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 @keyframes auroraShift {
@@ -255,7 +265,9 @@ body {
   pointer-events: none;
   user-select: none;
   animation: iconFloat linear infinite;
-  will-change: transform;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 @keyframes iconFloat {
@@ -292,6 +304,8 @@ body {
   border-radius: 50%;
   animation: dotPulse ease-in-out infinite;
   will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 @keyframes dotPulse {
@@ -951,6 +965,7 @@ body {
     radial-gradient(ellipse at center, rgba(10, 10, 20, 0.55) 0%, rgba(5, 5, 12, 0.82) 100%);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+  overflow: hidden;
 }
 
 .loading-content {

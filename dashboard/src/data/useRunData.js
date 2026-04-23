@@ -199,50 +199,54 @@ export function useRunData() {
     setLoading(true);
     setError(null);
 
-    // Try 1: Live API (with 5 second timeout)
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-      
-      const response = await fetch(`${API_URL}/api/summary`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' },
-        signal: controller.signal,
-      });
-      
-      clearTimeout(timeoutId);
-      
-      if (response.ok) {
-        const json = await response.json();
-        const { dataCount, formulaCount, formulas, logs, summary, source: apiSource } = json;
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-        setData({
-          topStats: buildTopStats(dataCount, summary, formulaCount),
-          runtimeSeries: buildRuntimeSeries(summary, formulaCount),
-          engineColors: {
-            ...engineColors,
-            ...Object.fromEntries(
-              Object.keys(summary || {}).map((m, i) => [
-                m,
-                ['#0084ff', '#ff007a', '#8a2bff', '#00e5ff', '#9dff00', '#ffb300'][i % 6],
-              ])
-            ),
-          },
-          insights: buildInsights(summary),
-          tResult: buildTResult(formulas, summary, logs),
-          logs,
-          summary,
-          exportedAt: json.exportedAt,
-          usingMock: false,
+    // Try 1: Live API — only when running locally (skip on deployed builds)
+    if (isLocal) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        
+        const response = await fetch(`${API_URL}/api/summary`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          signal: controller.signal,
         });
-        setUsingMock(false);
-        setSource(apiSource || 'live-db');
-        setLastRefresh(new Date());
-        setLoading(false);
-        return;
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          const json = await response.json();
+          const { dataCount, formulaCount, formulas, logs, summary, source: apiSource } = json;
+
+          setData({
+            topStats: buildTopStats(dataCount, summary, formulaCount),
+            runtimeSeries: buildRuntimeSeries(summary, formulaCount),
+            engineColors: {
+              ...engineColors,
+              ...Object.fromEntries(
+                Object.keys(summary || {}).map((m, i) => [
+                  m,
+                  ['#0084ff', '#ff007a', '#8a2bff', '#00e5ff', '#9dff00', '#ffb300'][i % 6],
+                ])
+              ),
+            },
+            insights: buildInsights(summary),
+            tResult: buildTResult(formulas, summary, logs),
+            logs,
+            summary,
+            exportedAt: json.exportedAt,
+            usingMock: false,
+          });
+          setUsingMock(false);
+          setSource(apiSource || 'live-db');
+          setLastRefresh(new Date());
+          setLoading(false);
+          return;
+        }
+      } catch (apiError) {
+        console.log('API not available, trying JSON fallback...', apiError.name);
       }
-    } catch (apiError) {
-      console.log('API not available or timeout, trying JSON fallback...', apiError.name);
     }
 
     // Try 2: Static JSON file (fallback)
