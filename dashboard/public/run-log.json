@@ -1,0 +1,102 @@
+{
+  "exportedAt": "2026-04-22T19:30:00.000Z",
+  "dataCount": 1000000,
+  "formulaCount": 12,
+  "formulas": [
+    {"targil_id": 1, "targil": "a + b", "tnai": null, "targil_false": null},
+    {"targil_id": 2, "targil": "c * 2", "tnai": null, "targil_false": null},
+    {"targil_id": 3, "targil": "a - b", "tnai": null, "targil_false": null},
+    {"targil_id": 4, "targil": "d / 4", "tnai": null, "targil_false": null},
+    {"targil_id": 5, "targil": "8 * (a + b)", "tnai": null, "targil_false": null},
+    {"targil_id": 6, "targil": "(c * c) + (d * d)", "tnai": null, "targil_false": null},
+    {"targil_id": 7, "targil": "(a + b + c + d) / 4", "tnai": null, "targil_false": null},
+    {"targil_id": 8, "targil": "(a * b) - (c / 2)", "tnai": null, "targil_false": null},
+    {"targil_id": 9, "targil": "b * 2", "tnai": "a > 5", "targil_false": "b / 2"},
+    {"targil_id": 10, "targil": "a + 1", "tnai": "b < 10", "targil_false": "d - 1"},
+    {"targil_id": 11, "targil": "1", "tnai": "a == c", "targil_false": "0"},
+    {"targil_id": 12, "targil": "(a + b) * 2", "tnai": "c > d", "targil_false": "(a + b) / 2"}
+  ],
+  "logs": [
+    {"log_id": 1, "targil_id": 1, "method": "SQLDynamic", "run_time": 8.234},
+    {"log_id": 2, "targil_id": 2, "method": "SQLDynamic", "run_time": 8.567},
+    {"log_id": 3, "targil_id": 3, "method": "SQLDynamic", "run_time": 8.123},
+    {"log_id": 4, "targil_id": 4, "method": "SQLDynamic", "run_time": 8.891},
+    {"log_id": 5, "targil_id": 5, "method": "SQLDynamic", "run_time": 9.234},
+    {"log_id": 6, "targil_id": 6, "method": "SQLDynamic", "run_time": 10.567},
+    {"log_id": 7, "targil_id": 7, "method": "SQLDynamic", "run_time": 9.123},
+    {"log_id": 8, "targil_id": 8, "method": "SQLDynamic", "run_time": 9.891},
+    {"log_id": 9, "targil_id": 9, "method": "SQLDynamic", "run_time": 11.234},
+    {"log_id": 10, "targil_id": 10, "method": "SQLDynamic", "run_time": 11.567},
+    {"log_id": 11, "targil_id": 11, "method": "SQLDynamic", "run_time": 10.123},
+    {"log_id": 12, "targil_id": 12, "method": "SQLDynamic", "run_time": 11.891},
+    
+    {"log_id": 13, "targil_id": 1, "method": "Roslyn", "run_time": 18.456},
+    {"log_id": 14, "targil_id": 2, "method": "Roslyn", "run_time": 18.789},
+    {"log_id": 15, "targil_id": 3, "method": "Roslyn", "run_time": 18.234},
+    {"log_id": 16, "targil_id": 4, "method": "Roslyn", "run_time": 19.567},
+    {"log_id": 17, "targil_id": 5, "method": "Roslyn", "run_time": 20.123},
+    {"log_id": 18, "targil_id": 6, "method": "Roslyn", "run_time": 21.891},
+    {"log_id": 19, "targil_id": 7, "method": "Roslyn", "run_time": 19.456},
+    {"log_id": 20, "targil_id": 8, "method": "Roslyn", "run_time": 20.234},
+    {"log_id": 21, "targil_id": 9, "method": "Roslyn", "run_time": 22.567},
+    {"log_id": 22, "targil_id": 10, "method": "Roslyn", "run_time": 22.891},
+    {"log_id": 23, "targil_id": 11, "method": "Roslyn", "run_time": 21.123},
+    {"log_id": 24, "targil_id": 12, "method": "Roslyn", "run_time": 23.234},
+    
+    {"log_id": 25, "targil_id": 1, "method": "PythonSymPy", "run_time": 13.567},
+    {"log_id": 26, "targil_id": 2, "method": "PythonSymPy", "run_time": 13.891},
+    {"log_id": 27, "targil_id": 3, "method": "PythonSymPy", "run_time": 13.234},
+    {"log_id": 28, "targil_id": 4, "method": "PythonSymPy", "run_time": 14.567},
+    {"log_id": 29, "targil_id": 5, "method": "PythonSymPy", "run_time": 15.123},
+    {"log_id": 30, "targil_id": 6, "method": "PythonSymPy", "run_time": 16.891},
+    {"log_id": 31, "targil_id": 7, "method": "PythonSymPy", "run_time": 14.456},
+    {"log_id": 32, "targil_id": 8, "method": "PythonSymPy", "run_time": 15.234},
+    {"log_id": 33, "targil_id": 9, "method": "PythonSymPy", "run_time": 17.567},
+    {"log_id": 34, "targil_id": 10, "method": "PythonSymPy", "run_time": 17.891},
+    {"log_id": 35, "targil_id": 11, "method": "PythonSymPy", "run_time": 16.123},
+    {"log_id": 36, "targil_id": 12, "method": "PythonSymPy", "run_time": 18.234},
+    
+    {"log_id": 37, "targil_id": 1, "method": "AITranslated", "run_time": 21.234},
+    {"log_id": 38, "targil_id": 2, "method": "AITranslated", "run_time": 21.567},
+    {"log_id": 39, "targil_id": 3, "method": "AITranslated", "run_time": 20.891},
+    {"log_id": 40, "targil_id": 4, "method": "AITranslated", "run_time": 22.123},
+    {"log_id": 41, "targil_id": 5, "method": "AITranslated", "run_time": 22.789},
+    {"log_id": 42, "targil_id": 6, "method": "AITranslated", "run_time": 24.456},
+    {"log_id": 43, "targil_id": 7, "method": "AITranslated", "run_time": 21.891},
+    {"log_id": 44, "targil_id": 8, "method": "AITranslated", "run_time": 22.567},
+    {"log_id": 45, "targil_id": 9, "method": "AITranslated", "run_time": 25.123},
+    {"log_id": 46, "targil_id": 10, "method": "AITranslated", "run_time": 25.456},
+    {"log_id": 47, "targil_id": 11, "method": "AITranslated", "run_time": 23.789},
+    {"log_id": 48, "targil_id": 12, "method": "AITranslated", "run_time": 26.012}
+  ],
+  "summary": {
+    "SQLDynamic": {
+      "avg": 9.79,
+      "min": 8.12,
+      "max": 11.89,
+      "runs": 12,
+      "total_ops": 12000000
+    },
+    "Roslyn": {
+      "avg": 20.55,
+      "min": 18.23,
+      "max": 23.23,
+      "runs": 12,
+      "total_ops": 12000000
+    },
+    "PythonSymPy": {
+      "avg": 15.57,
+      "min": 13.23,
+      "max": 18.23,
+      "runs": 12,
+      "total_ops": 12000000
+    },
+    "AITranslated": {
+      "avg": 23.16,
+      "min": 20.89,
+      "max": 26.01,
+      "runs": 12,
+      "total_ops": 12000000
+    }
+  }
+}

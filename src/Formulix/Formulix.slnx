@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Formulix.AITranslator/Formulix.AITranslator.csproj" />
+  <Project Path="Formulix.RoslynRunner/Formulix.RoslynRunner.csproj" />
+  <Project Path="Formulix.Shared/Formulix.Shared.csproj" />
+  <Project Path="Formulix.SqlDynamic/Formulix.SqlDynamic.csproj" />
+  <Project Path="Formulix.API/Formulix.API.csproj" />
+</Solution>
