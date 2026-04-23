@@ -53,8 +53,8 @@ export default function App() {
     <RunDataContext.Provider value={data}>
       <BackgroundFX />
 
-      <AnimatePresence>
-        {loading && <LoadingOverlay />}
+      <AnimatePresence mode="wait">
+        {loading && <LoadingOverlay key="run-data-loading" />}
       </AnimatePresence>
 
       <main className={`app-shell ${loading ? 'is-loading' : ''}`}>
