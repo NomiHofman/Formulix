@@ -5,6 +5,12 @@ import {
   Zap, Server, Cpu, ArrowLeftRight,
   CheckCircle2, Clock, ChevronDown
 } from 'lucide-react';
+import {
+  revealStaggerStrong,
+  staggerChildBig,
+  fadeUp,
+  SCROLL_VIEWPORT,
+} from '../utils/scrollAnimations';
 
 const methods = [
   {
@@ -126,16 +132,6 @@ const methods = [
   },
 ];
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
-
 function MethodCard({ method }) {
   const [open, setOpen] = useState(false);
   const Icon = method.icon;
@@ -143,9 +139,10 @@ function MethodCard({ method }) {
   return (
     <motion.div
       className="glass method-card"
-      variants={item}
+      variants={staggerChildBig}
       style={{ borderColor: `${method.color}33`, cursor: 'pointer' }}
       onClick={() => setOpen((o) => !o)}
+      whileHover={{ y: -6, transition: { type: 'spring', stiffness: 320, damping: 22 } }}
       layout={false}
     >
       {/* Header — always visible */}
@@ -250,9 +247,10 @@ export default function MethodsExplainer() {
   return (
     <motion.section
       className="methods-section"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="show"
+      viewport={SCROLL_VIEWPORT}
     >
       <div className="methods-header">
         <div>
@@ -268,9 +266,10 @@ export default function MethodsExplainer() {
 
       <motion.div 
         className="methods-grid"
-        variants={container}
+        variants={revealStaggerStrong}
         initial="hidden"
-        animate="show"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.15 }}
       >
         {methods.map((method) => (
           <MethodCard key={method.id} method={method} />
@@ -279,9 +278,10 @@ export default function MethodsExplainer() {
 
       <motion.div 
         className="glass recommendation-box"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.3 }}
       >
         <div className="recommendation-content">
           <div className="recommendation-icon">

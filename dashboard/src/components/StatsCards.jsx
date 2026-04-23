@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Database, Cpu, Activity, Timer } from 'lucide-react';
 import { useData } from '../data/RunDataContext';
 import AnimatedNumber from './AnimatedNumber';
+import { revealStaggerStrong, staggerChildBig, SCROLL_VIEWPORT } from '../utils/scrollAnimations';
 
 const ICONS = { Database, Cpu, Activity, Timer };
 
@@ -12,22 +13,6 @@ const TONE_MAP = {
   cyan:   { glow: 'glow-cyan',   icon: 'icon-cyan'   },
 };
 
-const container = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.07, delayChildren: 0.05 },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 14 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
-  },
-};
-
 export default function StatsCards() {
   const data = useData();
   const stats = data?.topStats ?? [];
@@ -36,9 +21,10 @@ export default function StatsCards() {
     <motion.section
       key={data ? 'stats-ready' : 'stats-wait'}
       className="stats-grid"
-      variants={container}
+      variants={revealStaggerStrong}
       initial="hidden"
-      animate="show"
+      whileInView="show"
+      viewport={SCROLL_VIEWPORT}
     >
       {stats.map((s) => {
         const Icon = ICONS[s.icon] ?? Activity;
@@ -52,8 +38,12 @@ export default function StatsCards() {
           <motion.div
             key={s.id}
             className={`glass stat-card ${tone.glow}`}
-            variants={item}
-            whileHover={{ y: -3, transition: { duration: 0.2 } }}
+            variants={staggerChildBig}
+            whileHover={{
+              y: -8,
+              scale: 1.025,
+              transition: { type: 'spring', stiffness: 320, damping: 20 },
+            }}
           >
             <div className="stat-top">
               <span className="stat-label">{s.label}</span>

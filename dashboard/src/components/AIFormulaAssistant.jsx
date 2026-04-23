@@ -4,6 +4,7 @@ import {
   Bot, Send, Sparkles, Wand2, Copy, Check,
   MessageSquare, Lightbulb, ArrowLeft
 } from 'lucide-react';
+import { scaleIn, SCROLL_VIEWPORT } from '../utils/scrollAnimations';
 
 /* =========================================================
    AIFormulaAssistant (Hebrew)
@@ -166,9 +167,10 @@ export default function AIFormulaAssistant({ onFormulaGenerated }) {
   return (
     <motion.div
       className="glass ai-assistant"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      variants={scaleIn}
+      initial="hidden"
+      whileInView="show"
+      viewport={SCROLL_VIEWPORT}
     >
       <div className="panel-header">
         <div>

@@ -3,6 +3,7 @@ import {
   BrainCircuit, Gauge, Zap, ShieldCheck, HardDrive, Trophy,
 } from 'lucide-react';
 import { useData } from '../data/RunDataContext';
+import { scaleIn, SCROLL_VIEWPORT } from '../utils/scrollAnimations';
 
 /* =========================================================
    SystemInsights (Hebrew RTL)
@@ -21,11 +22,11 @@ const TONE_COLOR = {
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.45 } },
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.3 } },
 };
 const rowAnim = {
-  hidden: { opacity: 0, x: 16 },
-  show:   { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  hidden: { opacity: 0, x: 28 },
+  show:   { opacity: 1, x: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
 };
 
 export default function SystemInsights() {
@@ -35,9 +36,10 @@ export default function SystemInsights() {
   return (
     <motion.aside
       className="glass panel"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, delay: 0.35, ease: 'easeOut' }}
+      variants={scaleIn}
+      initial="hidden"
+      whileInView="show"
+      viewport={SCROLL_VIEWPORT}
     >
       <div className="panel-header">
         <div>
@@ -62,7 +64,8 @@ export default function SystemInsights() {
         className="insight-list"
         variants={container}
         initial="hidden"
-        animate="show"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
       >
         {rows.map((r) => {
           const Icon = ICONS[r.icon] ?? Gauge;

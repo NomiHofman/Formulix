@@ -8,6 +8,7 @@ import {
 import { LineChart, BarChart3, Hexagon } from 'lucide-react';
 import { useData } from '../data/RunDataContext';
 import { friendlyName } from '../data/methodNames';
+import { scaleIn, SCROLL_VIEWPORT } from '../utils/scrollAnimations';
 
 const CHART_TYPES = [
   { key: 'area', label: 'שטח', icon: LineChart },
@@ -75,9 +76,10 @@ function RuntimeChart() {
   return (
     <motion.div
       className="glass panel"
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      variants={scaleIn}
+      initial="hidden"
+      whileInView="show"
+      viewport={SCROLL_VIEWPORT}
     >
       <div className="panel-header">
         <div>

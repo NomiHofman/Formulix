@@ -4,6 +4,7 @@ import { Table2, CheckCircle2, MousePointerClick } from 'lucide-react';
 import { useData } from '../data/RunDataContext';
 import { friendlyName } from '../data/methodNames';
 import FormulaModal from './FormulaModal';
+import { fadeUp, SCROLL_VIEWPORT } from '../utils/scrollAnimations';
 
 const CATEGORY_CLASS = {
   'פשוטה':   'residential',
@@ -49,9 +50,10 @@ export default function MatrixTable() {
     <>
       <motion.section
         className="glass matrix"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.5, ease: 'easeOut' }}
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={SCROLL_VIEWPORT}
       >
         <div className="panel-header">
           <div>

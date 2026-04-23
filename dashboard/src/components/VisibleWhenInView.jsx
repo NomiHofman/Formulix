@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 
 /**
- * Renders children only when the block nears the viewport.
- * Cuts first-paint & scroll work for huge sections; keeps all inner animations.
- * Adds a subtle fade-in + slide-up transition on reveal (Ofisense-style).
+ * Lazy-reveal wrapper: renders children only once they come close to the viewport.
+ * Keeps initial paint light for huge sections (charts, tables). The children
+ * themselves drive any whileInView animations.
  */
-export default function VisibleWhenInView({ children, minHeight = 280, rootMargin = '200px 0px', className = '' }) {
+export default function VisibleWhenInView({ children, minHeight = 280, rootMargin = '260px 0px', className = '' }) {
   const ref = useRef(null);
   const [show, setShow] = useState(false);
 
@@ -21,7 +20,7 @@ export default function VisibleWhenInView({ children, minHeight = 280, rootMargi
           obs.disconnect();
         }
       },
-      { root: null, rootMargin, threshold: 0.01 }
+      { root: null, rootMargin, threshold: 0.01 },
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -30,13 +29,7 @@ export default function VisibleWhenInView({ children, minHeight = 280, rootMargi
   return (
     <div ref={ref} className={className}>
       {show ? (
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {children}
-        </motion.div>
+        children
       ) : (
         <div
           className="deferred-section-placeholder"

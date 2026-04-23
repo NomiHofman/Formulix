@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, RotateCcw, Trophy, Zap } from 'lucide-react';
 import { useData } from '../data/RunDataContext';
 import { friendlyName } from '../data/methodNames';
+import { fadeUp, SCROLL_VIEWPORT } from '../utils/scrollAnimations';
 
 const DEFAULT_COLORS = {
   SQLDynamic: '#0084ff',
@@ -81,9 +82,10 @@ export default function EngineRace() {
   return (
     <motion.section
       className="glass engine-race"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="show"
+      viewport={SCROLL_VIEWPORT}
     >
       <div className="panel-header">
         <div>
