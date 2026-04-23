@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Table2, CheckCircle2, MousePointerClick } from 'lucide-react';
+import { Table2, CheckCircle2, MousePointerClick, Plus } from 'lucide-react';
 import { useData } from '../data/RunDataContext';
 import { friendlyName } from '../data/methodNames';
 import FormulaModal from './FormulaModal';
@@ -65,9 +65,9 @@ export default function MatrixTable() {
             </div>
           </div>
           <div className="legend">
-            <div className="legend-item" style={{ color: 'var(--text-mute)', gap: 6 }}>
+            <div className="legend-item matrix-click-hint">
               <MousePointerClick size={14} />
-              לחץ לפירוט
+              לחץ על כל שורה לפירוט מלא
             </div>
           </div>
         </div>
@@ -83,6 +83,7 @@ export default function MatrixTable() {
                   <th key={m} style={{ width: 120, textAlign: 'left' }}>{friendlyName(m)}</th>
                 ))}
                 <th style={{ width: 100, textAlign: 'center' }}>התאמה</th>
+                <th style={{ width: 70, textAlign: 'center' }}>פרטים</th>
               </tr>
             </thead>
             <tbody>
@@ -91,6 +92,7 @@ export default function MatrixTable() {
                 const hasValues = vals.some((v) => v != null);
                 const match = !hasValues || vals.every((v) => v != null);
                 const catClass = CATEGORY_CLASS[r.category] ?? 'residential';
+                const handleOpen = () => setSelectedRow(r);
 
                 return (
                   <motion.tr
@@ -99,9 +101,13 @@ export default function MatrixTable() {
                     variants={rowAnim}
                     initial="hidden"
                     animate="show"
-                    onClick={() => setSelectedRow(r)}
+                    onClick={handleOpen}
                     style={{ cursor: 'pointer' }}
                     className="clickable-row"
+                    whileHover={{
+                      backgroundColor: 'rgba(0, 132, 255, 0.05)',
+                      transition: { duration: 0.15 },
+                    }}
                   >
                     <td className="target-id">{r.targetId}</td>
                     <td className="formula-cell">{r.formula}</td>
@@ -131,6 +137,20 @@ export default function MatrixTable() {
                           שונה
                         </span>
                       )}
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <button
+                        type="button"
+                        className="row-detail-btn"
+                        title="פתח פירוט מלא לנוסחה"
+                        aria-label={`פתח פירוט מלא לנוסחה ${r.targetId}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpen();
+                        }}
+                      >
+                        <Plus size={16} strokeWidth={2.6} />
+                      </button>
                     </td>
                   </motion.tr>
                 );
