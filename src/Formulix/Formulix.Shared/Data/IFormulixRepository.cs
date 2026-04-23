@@ -20,4 +20,10 @@ public interface IFormulixRepository
     Task ClearResultsForMethodAsync(string method, CancellationToken cancellationToken = default);
 
     Task ClearLogsForMethodAsync(string method, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// TRUNCATEs t_results and t_log entirely. Use ONLY when starting a fresh benchmark from scratch;
+    /// compare_results.py needs all methods' data present simultaneously, so do not call between engines.
+    /// </summary>
+    Task TruncateAllResultsAsync(CancellationToken cancellationToken = default);
 }

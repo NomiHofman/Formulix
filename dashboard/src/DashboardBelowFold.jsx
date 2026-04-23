@@ -10,20 +10,28 @@ import VisibleWhenInView from './components/VisibleWhenInView';
 export default function DashboardBelowFold({ aiGeneratedFormula, onFormulaFromAI }) {
   return (
     <>
-      <section className="main-grid">
-        <SystemInsights />
-        <RuntimeChart />
-      </section>
+      <VisibleWhenInView minHeight={380} rootMargin="200px 0px">
+        <section className="main-grid">
+          <SystemInsights />
+          <RuntimeChart />
+        </section>
+      </VisibleWhenInView>
 
-      <EngineRace />
+      <VisibleWhenInView minHeight={320} rootMargin="200px 0px">
+        <EngineRace />
+      </VisibleWhenInView>
 
       <VisibleWhenInView minHeight={420} rootMargin="160px 0px">
         <MatrixTable />
       </VisibleWhenInView>
 
-      <AIFormulaAssistant onFormulaGenerated={onFormulaFromAI} />
+      <VisibleWhenInView minHeight={260} rootMargin="180px 0px">
+        <AIFormulaAssistant onFormulaGenerated={onFormulaFromAI} />
+      </VisibleWhenInView>
 
-      <FormulaTester initialFormula={aiGeneratedFormula} />
+      <VisibleWhenInView minHeight={320} rootMargin="180px 0px">
+        <FormulaTester initialFormula={aiGeneratedFormula} />
+      </VisibleWhenInView>
 
       <VisibleWhenInView minHeight={480} rootMargin="120px 0px">
         <MethodsExplainer />

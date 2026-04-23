@@ -25,6 +25,39 @@ string GetConnectionString()
         ?? "Server=tcp:formulix-srv-22042026.database.windows.net,1433;Initial Catalog=FormulixDB;Persist Security Info=False;User ID=formulixadmin;Password=Nh0583262051;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 }
 
+// GET / - Friendly landing page with list of available endpoints
+app.MapGet("/", () => Results.Content(@"<!DOCTYPE html>
+<html lang=""he"" dir=""rtl"">
+<head>
+<meta charset=""utf-8"" />
+<title>FORMULIX API</title>
+<style>
+ body { font-family: 'Segoe UI', Arial, sans-serif; background:#0b1020; color:#e7ecf3; padding:40px; margin:0; }
+ h1 { color:#7cc4ff; margin:0 0 6px; }
+ h2 { color:#9db4d0; font-weight:500; margin:0 0 30px; font-size:16px; }
+ a { color:#7cc4ff; text-decoration:none; }
+ a:hover { text-decoration:underline; }
+ .card { background:#121a33; border:1px solid #1e2a4d; border-radius:10px; padding:18px 22px; margin:10px 0; }
+ .method { display:inline-block; padding:3px 10px; border-radius:5px; font-weight:600; font-size:12px; margin-inline-end:10px; }
+ .get  { background:#1b4d7a; color:#b5e0ff; }
+ .post { background:#4d3a1b; color:#ffd9a8; }
+ code { background:#0e1530; padding:2px 6px; border-radius:4px; color:#e7ecf3; }
+</style>
+</head>
+<body>
+ <h1>FORMULIX · API</h1>
+ <h2>Dynamic Tariff Benchmark — REST endpoints</h2>
+
+ <div class=""card""><span class=""method get"">GET</span><a href=""/api/health"">/api/health</a> — health check</div>
+ <div class=""card""><span class=""method get"">GET</span><a href=""/api/status"">/api/status</a> — row counts per table</div>
+ <div class=""card""><span class=""method get"">GET</span><a href=""/api/summary"">/api/summary</a> — full dashboard payload</div>
+ <div class=""card""><span class=""method get"">GET</span><a href=""/api/results/sample"">/api/results/sample</a> — 100 sample results</div>
+ <div class=""card""><span class=""method post"">POST</span><code>/api/seed</code> — seed 1M rows into <code>t_data</code></div>
+ <div class=""card""><span class=""method post"">POST</span><code>/api/setup/stored-procedure</code> — create <code>usp_RunDynamicFormula</code></div>
+ <div class=""card""><span class=""method post"">POST</span><code>/api/run/sql-dynamic</code> — run SQL Dynamic on all formulas</div>
+ <div class=""card""><span class=""method post"">POST</span><code>/api/run/clear-sample-logs</code> — clear t_log</div>
+</body></html>", "text/html; charset=utf-8"));
+
 // GET /api/health - Health check
 app.MapGet("/api/health", () => new { status = "ok", timestamp = DateTime.UtcNow });
 

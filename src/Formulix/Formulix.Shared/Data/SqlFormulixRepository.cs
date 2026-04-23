@@ -200,4 +200,16 @@ public sealed class SqlFormulixRepository : IFormulixRepository
 
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
+
+    public async Task TruncateAllResultsAsync(CancellationToken cancellationToken = default)
+    {
+        await using SqlConnection connection = new(_connectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        // TRUNCATE is minimally-logged and much faster than DELETE for emptying the whole table.
+        const string sql = "TRUNCATE TABLE t_results; TRUNCATE TABLE t_log;";
+
+        await using SqlCommand command = new(sql, connection) { CommandTimeout = 0 };
+        await command.ExecuteNonQueryAsync(cancellationToken);
+    }
 }
