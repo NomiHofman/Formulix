@@ -129,23 +129,6 @@ body {
   padding: 48px 56px 72px;
 }
 
-/* Shown only while the heavy below-the-fold chunk (Recharts, matrix, etc.) downloads */
-.below-fold-fallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  margin: 24px 0 32px;
-  border-radius: var(--radius-lg);
-  border: 1px dashed var(--border);
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--text-mute);
-}
-.below-fold-fallback-text {
-  font-size: 13px;
-  letter-spacing: 0.4px;
-}
-
 .bg-layer {
   position: fixed;
   inset: 0;
@@ -392,8 +375,24 @@ body {
   place-items: center;
   background: linear-gradient(135deg, rgba(255, 0, 122, 0.3), rgba(0, 132, 255, 0.3));
   border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 0 24px rgba(255, 0, 122, 0.25),
+    0 0 40px rgba(0, 132, 255, 0.15);
   color: #fff;
+  animation: badgeAmbient 6s ease-in-out infinite alternate;
+}
+
+@keyframes badgeAmbient {
+  0% {
+    box-shadow:
+      0 0 20px rgba(255, 0, 122, 0.22),
+      0 0 36px rgba(0, 132, 255, 0.12);
+  }
+  100% {
+    box-shadow:
+      0 0 32px rgba(255, 0, 122, 0.35),
+      0 0 48px rgba(0, 132, 255, 0.22);
+  }
 }
 
 .brand-title {
@@ -411,11 +410,18 @@ body {
     #0084ff 75%,
     #00e5ff 100%
   );
+  background-size: 200% 100%;
   -webkit-background-clip: text;
           background-clip: text;
   color: transparent;
   direction: ltr;
   unicode-bidi: bidi-override;
+  animation: titleGradientDrift 16s ease-in-out infinite alternate;
+}
+
+@keyframes titleGradientDrift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
 
 .brand-tagline {
@@ -523,10 +529,10 @@ body {
 .stat-delta strong { color: #fff; font-weight: 600; }
 
 /* Colored glows per card */
-.glow-pink   { box-shadow: var(--shadow-card); border-color: rgba(255, 0, 122, 0.22); }
-.glow-blue   { box-shadow: var(--shadow-card); border-color: rgba(0, 132, 255, 0.22); }
-.glow-violet { box-shadow: var(--shadow-card); border-color: rgba(138, 43, 255, 0.22); }
-.glow-cyan   { box-shadow: var(--shadow-card); border-color: rgba(0, 229, 255, 0.2); }
+.glow-pink   { box-shadow: var(--shadow-card), 0 0 40px -12px rgba(255, 0, 122, 0.4); }
+.glow-blue   { box-shadow: var(--shadow-card), 0 0 40px -12px rgba(0, 132, 255, 0.4); }
+.glow-violet { box-shadow: var(--shadow-card), 0 0 40px -12px rgba(138, 43, 255, 0.4); }
+.glow-cyan   { box-shadow: var(--shadow-card), 0 0 40px -12px rgba(0, 229, 255, 0.35); }
 
 .icon-pink   { color: var(--neon-pink); }
 .icon-blue   { color: var(--neon-blue); }
@@ -2216,9 +2222,12 @@ body {
   50% { transform: scale(1.15); opacity: 0.8; }
 }
 
-/* Smooth icon transitions */
 .stat-icon {
-  transition: color 0.2s ease;
+  transition: transform 0.25s ease, color 0.2s ease;
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.06);
 }
 
 /* Refresh button spin on hover */
@@ -2230,14 +2239,14 @@ body {
   transform: scale(0.95);
 }
 
-/* Method card — avoid layout shift on scroll/hover (GPU-heavy) */
 .method-card {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s ease, border-color 0.2s ease, box-shadow 0.25s ease;
 }
 
 .method-card:hover {
-  border-color: rgba(0, 132, 255, 0.2);
-  box-shadow: var(--shadow-card);
+  transform: translateY(-3px);
+  border-color: rgba(0, 132, 255, 0.25);
+  box-shadow: var(--shadow-card), 0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 /* Formula cell hover highlight */
@@ -2281,4 +2290,22 @@ body {
 
 .insight-row:hover {
   background: rgba(255, 255, 255, 0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-title,
+  .brand-badge {
+    animation: none !important;
+  }
+  .stat-card,
+  .method-card,
+  .glass {
+    transition: none !important;
+  }
+  .stat-card:hover .stat-icon {
+    transform: none;
+  }
+  .method-card:hover {
+    transform: none;
+  }
 }

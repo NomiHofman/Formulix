@@ -1,21 +1,15 @@
-import { useState, useCallback, lazy, Suspense } from 'react';
+import { useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import BackgroundFX from './components/BackgroundFX';
 import Header from './components/Header';
 import StatsCards from './components/StatsCards';
 import LoadingOverlay from './components/LoadingOverlay';
+import DashboardBelowFold from './DashboardBelowFold';
 import { RunDataContext } from './data/RunDataContext';
 import { useRunData } from './data/useRunData';
 
-const DashboardBelowFold = lazy(() => import('./DashboardBelowFold'));
-
-function BelowFoldFallback() {
-  return (
-    <div className="below-fold-fallback" aria-busy="true">
-      <span className="below-fold-fallback-text">טוען ויזואליזציות…</span>
-    </div>
-  );
-}
+/* Eager import of below-the-fold: lazy() caused a *second* JS download wave; Chrome/Edge
+   show a top “loading” bar until *all* module requests finish — looks like a stuck bar. */
 
 export default function App() {
   const { data, loading, source, lastRefresh, refresh } = useRunData();
@@ -91,12 +85,10 @@ export default function App() {
 
         <StatsCards />
 
-        <Suspense fallback={<BelowFoldFallback />}>
-          <DashboardBelowFold
-            aiGeneratedFormula={aiGeneratedFormula}
-            onFormulaFromAI={handleFormulaFromAI}
-          />
-        </Suspense>
+        <DashboardBelowFold
+          aiGeneratedFormula={aiGeneratedFormula}
+          onFormulaFromAI={handleFormulaFromAI}
+        />
       </main>
     </RunDataContext.Provider>
   );

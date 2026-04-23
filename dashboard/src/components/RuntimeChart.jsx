@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   ResponsiveContainer, AreaChart, Area, BarChart, Bar,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -72,7 +73,12 @@ export default function RuntimeChart() {
   const radarData = buildRadarData(summary);
 
   return (
-    <div className="glass panel">
+    <motion.div
+      className="glass panel"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="panel-header">
         <div>
           <div className="panel-title">
@@ -132,13 +138,15 @@ export default function RuntimeChart() {
               <XAxis dataKey="batch" tickLine={false} axisLine={false} dy={8} />
               <YAxis tickLine={false} axisLine={false} tickFormatter={(v) => `${v}s`} width={50} />
               <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.15)', strokeWidth: 1 }} />
-              {engines.map((e) => (
+              {engines.map((e, i) => (
                 <Area
                   key={e} type="monotone" dataKey={e}
                   stroke={colors[e]} strokeWidth={2.2}
                   fill={`url(#grad-${e.replace(/\s/g, '')})`}
                   dot={false} activeDot={{ r: 5, strokeWidth: 0 }}
-                  isAnimationActive={false}
+                  isAnimationActive
+                  animationBegin={i * 70}
+                  animationDuration={650}
                 />
               ))}
             </AreaChart>
@@ -148,11 +156,13 @@ export default function RuntimeChart() {
               <XAxis dataKey="batch" tickLine={false} axisLine={false} dy={8} />
               <YAxis tickLine={false} axisLine={false} tickFormatter={(v) => `${v}s`} width={50} />
               <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-              {engines.map((e) => (
+              {engines.map((e, i) => (
                 <Bar
                   key={e} dataKey={e} fill={colors[e]}
                   radius={[4, 4, 0, 0]} opacity={0.85}
-                  isAnimationActive={false}
+                  isAnimationActive
+                  animationBegin={i * 55}
+                  animationDuration={550}
                 />
               ))}
             </BarChart>
@@ -166,7 +176,8 @@ export default function RuntimeChart() {
                   key={e} name={friendlyName(e)} dataKey={e}
                   stroke={colors[e]} fill={colors[e]} fillOpacity={0.15}
                   strokeWidth={2}
-                  isAnimationActive={false}
+                  isAnimationActive
+                  animationDuration={600}
                 />
               ))}
               <RLegend
@@ -177,6 +188,6 @@ export default function RuntimeChart() {
           )}
         </ResponsiveContainer>
       </div>
-    </div>
+    </motion.div>
   );
 }
