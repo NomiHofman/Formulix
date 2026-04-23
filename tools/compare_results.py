@@ -23,21 +23,25 @@ SQL Server's FLOAT, .NET's System.Math and NumPy may differ in the last
 bit of a double. A ~1e-9 absolute tolerance is well below any meaningful
 tariff precision and catches real bugs while ignoring noise.
 
-Run:
+Run (LocalDB by default; set FORMULIX_DB_ODBC to match Azure / same as python/db.py):
     python tools\\compare_results.py
 """
 
+import os
 import sys
 from collections import defaultdict
 
 import pyodbc
 
-CONNECTION_STRING = (
+_DEFAULT_LOCAL = (
     "DRIVER={ODBC Driver 17 for SQL Server};"
     "SERVER=(localdb)\\MSSQLLocalDB;"
     "DATABASE=Formulix;"
     "Trusted_Connection=yes;"
 )
+
+# Same variable as python/formulix_sympy/db.py — set to Azure / remote ODBC when not using LocalDB.
+CONNECTION_STRING = os.getenv("FORMULIX_DB_ODBC", _DEFAULT_LOCAL)
 
 REFERENCE_METHOD = "SQLDynamic"
 TOLERANCE = 1e-9

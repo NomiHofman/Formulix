@@ -26,23 +26,25 @@ BEGIN
     IF @Condition IS NULL
     BEGIN
         SET @Sql = N'
-            INSERT INTO t_results (data_id, targil_id, method, result)
-            SELECT data_id, ' + CAST(@TargilId AS VARCHAR(20)) + ', @Method, 
+            INSERT INTO t_results WITH (TABLOCK) (data_id, targil_id, method, result)
+            SELECT data_id, ' + CAST(@TargilId AS VARCHAR(20)) + ', @Method,
                    CAST(' + @Formula + ' AS FLOAT)
-            FROM t_data';
+            FROM t_data WITH (NOLOCK)
+            OPTION (MAXDOP 0);';
     END
     ELSE
     BEGIN
         SET @Condition = REPLACE(@Condition, '==', '=');
         SET @Sql = N'
-            INSERT INTO t_results (data_id, targil_id, method, result)
-            SELECT data_id, ' + CAST(@TargilId AS VARCHAR(20)) + ', @Method, 
+            INSERT INTO t_results WITH (TABLOCK) (data_id, targil_id, method, result)
+            SELECT data_id, ' + CAST(@TargilId AS VARCHAR(20)) + ', @Method,
                    CAST(
                        CASE WHEN ' + @Condition + ' THEN ' + @Formula + '
                             ELSE ' + @FalseFormula + '
-                       END 
+                       END
                    AS FLOAT)
-            FROM t_data';
+            FROM t_data WITH (NOLOCK)
+            OPTION (MAXDOP 0);';
     END
     
     EXEC sp_executesql @Sql, N'@Method VARCHAR(50)', @Method = @Method;

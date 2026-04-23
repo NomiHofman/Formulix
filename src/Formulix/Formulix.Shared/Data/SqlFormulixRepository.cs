@@ -83,6 +83,46 @@ public sealed class SqlFormulixRepository : IFormulixRepository
             return;
         }
 
+        DataTable table = BuildResultsTable(results);
+
+        await using SqlConnection connection = new(_connectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        await BulkCopyResultsAsync(connection, table, cancellationToken);
+    }
+
+    /// <summary>
+    /// Streams <paramref name="rows"/> into t_results using a single long-lived connection.
+    /// Order of magnitude faster against Azure SQL than opening a connection per batch.
+    /// </summary>
+    public async Task InsertResultsStreamAsync(
+        IAsyncEnumerable<FormulaResult> rows,
+        int batchSize = 50_000,
+        CancellationToken cancellationToken = default)
+    {
+        await using SqlConnection connection = new(_connectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        List<FormulaResult> batch = new(batchSize);
+
+        await foreach (FormulaResult row in rows.WithCancellation(cancellationToken))
+        {
+            batch.Add(row);
+            if (batch.Count >= batchSize)
+            {
+                await BulkCopyResultsAsync(connection, BuildResultsTable(batch), cancellationToken);
+                batch.Clear();
+            }
+        }
+
+        if (batch.Count > 0)
+        {
+            await BulkCopyResultsAsync(connection, BuildResultsTable(batch), cancellationToken);
+        }
+    }
+
+    private static DataTable BuildResultsTable(IReadOnlyList<FormulaResult> results)
+    {
         DataTable table = new();
         table.Columns.Add("data_id", typeof(int));
         table.Columns.Add("targil_id", typeof(int));
@@ -95,14 +135,18 @@ public sealed class SqlFormulixRepository : IFormulixRepository
             table.Rows.Add(result.DataId, result.TargilId, result.Method, resultValue);
         }
 
-        await using SqlConnection connection = new(_connectionString);
-        await connection.OpenAsync(cancellationToken);
+        return table;
+    }
 
-        using SqlBulkCopy bulkCopy = new(connection)
+    private static async Task BulkCopyResultsAsync(SqlConnection connection, DataTable table, CancellationToken cancellationToken)
+    {
+        // TableLock => minimally-logged bulk insert on HEAP targets; critical for Azure perf.
+        using SqlBulkCopy bulkCopy = new(connection, SqlBulkCopyOptions.TableLock, externalTransaction: null)
         {
             DestinationTableName = "t_results",
-            BatchSize = 5000,
-            BulkCopyTimeout = 0
+            BatchSize = 50_000,
+            BulkCopyTimeout = 0,
+            EnableStreaming = true,
         };
 
         bulkCopy.ColumnMappings.Add("data_id", "data_id");

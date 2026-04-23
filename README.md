@@ -94,6 +94,8 @@ Formulix/
 
 ## 🚀 הוראות הרצה
 
+**רשת אחרת / פורט 1433 / Azure מול LocalDB / בלי Cursor:** [`docs/RUN_FOUR_ENGINES.md`](docs/RUN_FOUR_ENGINES.md) — סדר מדויק, משתני סביבה, ופרומפט ל-Gemini לתקלות.
+
 ### שלב 1: הקמת מסד הנתונים
 
 ```sql

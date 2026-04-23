@@ -30,12 +30,13 @@ from pathlib import Path
 
 import pyodbc
 
-CONNECTION_STRING = (
+_DEFAULT_LOCAL = (
     "DRIVER={ODBC Driver 17 for SQL Server};"
     "SERVER=(localdb)\\MSSQLLocalDB;"
     "DATABASE=Formulix;"
     "Trusted_Connection=yes;"
 )
+CONNECTION_STRING = os.getenv("FORMULIX_DB_ODBC", _DEFAULT_LOCAL)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 OUTPUT_FILE = SCRIPT_DIR.parent / "dashboard" / "public" / "run-log.json"

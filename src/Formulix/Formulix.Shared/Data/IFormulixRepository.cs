@@ -10,6 +10,11 @@ public interface IFormulixRepository
 
     Task InsertResultsBulkAsync(IReadOnlyList<FormulaResult> results, CancellationToken cancellationToken = default);
 
+    Task InsertResultsStreamAsync(
+        IAsyncEnumerable<FormulaResult> rows,
+        int batchSize = 50_000,
+        CancellationToken cancellationToken = default);
+
     Task InsertLogAsync(LogEntry logEntry, CancellationToken cancellationToken = default);
 
     Task ClearResultsForMethodAsync(string method, CancellationToken cancellationToken = default);
