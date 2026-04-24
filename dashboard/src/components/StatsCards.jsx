@@ -30,10 +30,9 @@ export default function StatsCards() {
         const Icon = ICONS[s.icon] ?? Activity;
         const tone = TONE_MAP[s.tone] ?? TONE_MAP.blue;
 
-        const numericValue = typeof s.value === 'number' ? s.value :
-          parseFloat(String(s.displayValue).replace(/[^0-9.]/g, '')) || 0;
         const isRuntime = s.id === 'runtime';
-        const isTimeValue = !isRuntime && s.id === 'bestTime';
+        const animNum = s.num ?? 0;
+        const animSuffix = s.suffix ?? '';
 
         return (
           <motion.div
@@ -56,12 +55,12 @@ export default function StatsCards() {
               <div className="stat-value">
                 {isRuntime ? (
                   s.displayValue
-                ) : numericValue > 0 ? (
+                ) : animNum > 0 ? (
                   <AnimatedNumber
-                    value={numericValue}
+                    value={animNum}
                     duration={1200}
-                    decimals={isTimeValue ? 2 : 0}
-                    suffix={isTimeValue ? 's' : ''}
+                    decimals={animNum % 1 !== 0 ? 1 : 0}
+                    suffix={animSuffix}
                   />
                 ) : (
                   s.displayValue

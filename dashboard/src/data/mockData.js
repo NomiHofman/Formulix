@@ -8,7 +8,8 @@ export const topStats = [
   {
     id: 'records',
     label: 'סה״כ רשומות',
-    value: '1,000,000',
+    num: 1,
+    suffix: 'M',
     displayValue: '1M',
     delta: 'בטבלת t_data',
     icon: 'Database',
@@ -17,7 +18,8 @@ export const topStats = [
   {
     id: 'engines',
     label: 'מנועי חישוב',
-    value: '4',
+    num: 4,
+    suffix: '',
     displayValue: '4',
     delta: 'SQL Dynamic · Roslyn · Python · AI',
     icon: 'Cpu',
@@ -26,7 +28,8 @@ export const topStats = [
   {
     id: 'operations',
     label: 'סה״כ פעולות',
-    value: '48,000,000',
+    num: 48,
+    suffix: 'M',
     displayValue: '48M',
     delta: 'על פני כל המנועים',
     icon: 'Activity',

@@ -37,6 +37,14 @@ const fmt = (n) =>
     ? `${(n / 1_000).toFixed(0)}K`
     : String(n);
 
+// Returns { num, suffix } so AnimatedNumber can animate the number
+// while keeping the unit label (M/K) visible.
+function fmtParts(n) {
+  if (n >= 1_000_000) return { num: +(n / 1_000_000).toFixed(1), suffix: 'M' };
+  if (n >= 1_000)     return { num: +(n / 1_000).toFixed(1),     suffix: 'K' };
+  return { num: n, suffix: '' };
+}
+
 // Format a duration (in seconds) using compact developer-style units.
 //  < 1s   → "950ms"
 //  < 60s  → "5.74s"
@@ -81,7 +89,7 @@ function buildTopStats(dataCount, summary, formulaCount) {
     {
       id: 'records',
       label: 'סה״כ רשומות',
-      value: dataCount.toLocaleString(),
+      ...fmtParts(dataCount),
       displayValue: fmt(dataCount),
       delta: 'בטבלת t_data',
       icon: 'Database',
@@ -90,7 +98,8 @@ function buildTopStats(dataCount, summary, formulaCount) {
     {
       id: 'engines',
       label: 'מנועי חישוב',
-      value: String(methods.length || 4),
+      num: methods.length || 4,
+      suffix: '',
       displayValue: String(methods.length || 4),
       delta: methods.length > 0 
         ? methods.map(friendlyName).join(' · ') 
@@ -101,7 +110,7 @@ function buildTopStats(dataCount, summary, formulaCount) {
     {
       id: 'operations',
       label: 'סה״כ פעולות',
-      value: totalOps.toLocaleString(),
+      ...fmtParts(totalOps),
       displayValue: fmt(totalOps),
       delta: 'על פני כל המנועים',
       icon: 'Activity',
