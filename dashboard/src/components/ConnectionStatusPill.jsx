@@ -46,21 +46,15 @@ export default function ConnectionStatusPill({
           icon: Database,
         };
       case 'json':
-        return isLocalHost
-          ? {
-              dot: '#ffaa00',
-              label: 'Snapshot',
-              title: 'נתונים מ-snapshot מקומי',
-              subtitle: 'ה-API לא רץ — מוצג קובץ run-log.json',
-              icon: Server,
-            }
-          : {
-              dot: '#00ff9d',
-              label: 'DB חי',
-              title: 'מחובר לנתוני בנצ׳מרק מה-DB',
-              subtitle: 'נתונים אמיתיים מ-Azure SQL',
-              icon: Database,
-            };
+        return {
+          dot: '#6e9fff',
+          label: 'Snapshot',
+          title: 'נתונים מ-snapshot (run-log.json)',
+          subtitle: isLocalHost
+            ? 'ה-API לא רץ — מוצג snapshot מקומי'
+            : 'הרץ את המנועים ועדכן snapshot לנתונים אמיתיים',
+          icon: Server,
+        };
       case 'mock':
         return {
           dot: '#ff5d6c',
