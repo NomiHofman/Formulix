@@ -1,0 +1,50 @@
+# Refresh dashboard/public/run-log.json from the live Azure SQL DB.
+# Runs on a schedule (every 6 hours) and can be triggered manually.
+# Requires one repository secret: FORMULIX_DB_ODBC
+
+name: Refresh DB Snapshot
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'     # every 6 hours
+  workflow_dispatch:           # manual trigger from Actions tab
+
+permissions:
+  contents: write              # push the updated JSON back
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install ODBC driver + dependencies
+        run: |
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+          curl -fsSL https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
+          pip install pyodbc
+
+      - name: Export snapshot from Azure SQL
+        env:
+          FORMULIX_DB_ODBC: ${{ secrets.FORMULIX_DB_ODBC }}
+        run: python tools/export_logs.py
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dashboard/public/run-log.json
+          if git diff --cached --quiet; then
+            echo "No changes to run-log.json — skipping commit."
+          else
+            git commit -m "chore(snapshot): auto-refresh run-log.json from live DB [skip ci]"
+            git push
+          fi

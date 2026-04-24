@@ -224,43 +224,36 @@ export function useRunData() {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
     // Try 1: Live API — only when running locally (skip on deployed builds).
-    // We probe a list of candidate URLs (default Kestrel ports + Visual Studio
-    // randomized HTTPS profiles). For each candidate we first ping /api/health
-    // with a short 1.5s timeout — if it answers, we trust it and call /api/summary
-    // with a longer 25s timeout (enough for an Azure SQL cold-start).
+    // Race ALL candidate URLs in parallel with a tight 800ms health-check
+    // timeout so the worst case is ~1s, not 4×1.5s sequentially.
     if (isLocal) {
       let liveJson = null;
       let liveSource = 'live-db';
 
-      for (const baseUrl of API_CANDIDATES) {
-        try {
-          const healthCtrl = new AbortController();
-          const healthTimer = setTimeout(() => healthCtrl.abort(), 1500);
-          const healthResp = await fetch(`${baseUrl}/api/health`, {
-            method: 'GET',
-            headers: { Accept: 'application/json' },
-            signal: healthCtrl.signal,
-          });
-          clearTimeout(healthTimer);
-          if (!healthResp.ok) continue;
+      const probeOne = async (baseUrl) => {
+        const hCtrl = new AbortController();
+        const hTimer = setTimeout(() => hCtrl.abort(), 800);
+        const hResp = await fetch(`${baseUrl}/api/health`, {
+          signal: hCtrl.signal,
+        });
+        clearTimeout(hTimer);
+        if (!hResp.ok) throw new Error('not ok');
+        return baseUrl;
+      };
 
-          console.log(`[useRunData] API alive at ${baseUrl} → fetching /api/summary (timeout 25s)…`);
-          const sumCtrl = new AbortController();
-          const sumTimer = setTimeout(() => sumCtrl.abort(), 25000);
-          const sumResp = await fetch(`${baseUrl}/api/summary`, {
-            method: 'GET',
-            headers: { Accept: 'application/json' },
-            signal: sumCtrl.signal,
-          });
-          clearTimeout(sumTimer);
-          if (!sumResp.ok) continue;
-
-          liveJson = await sumResp.json();
+      try {
+        const winner = await Promise.any(API_CANDIDATES.map(probeOne));
+        console.log(`[useRunData] API alive at ${winner} → fetching /api/summary…`);
+        const sCtrl = new AbortController();
+        const sTimer = setTimeout(() => sCtrl.abort(), 25000);
+        const sResp = await fetch(`${winner}/api/summary`, { signal: sCtrl.signal });
+        clearTimeout(sTimer);
+        if (sResp.ok) {
+          liveJson = await sResp.json();
           liveSource = liveJson.source || 'live-db';
-          break;
-        } catch (probeErr) {
-          // silent — try next candidate
         }
+      } catch {
+        // all candidates failed — fall through
       }
 
       if (liveJson) {
@@ -293,10 +286,52 @@ export function useRunData() {
         return;
       }
 
-      console.warn('[useRunData] No live API responded on any candidate port. Falling back to /run-log.json.');
+      console.warn('[useRunData] No live API responded. Falling back to /run-log.json.');
     }
 
-    // Try 2: Static JSON file (fallback)
+    // Try 2: Vercel Serverless Function (production live-DB endpoint)
+    if (!isLocal) {
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 20000);
+        const resp = await fetch('/api/summary', { signal: ctrl.signal });
+        clearTimeout(timer);
+        if (resp.ok) {
+          const json = await resp.json();
+          const { dataCount, formulaCount, formulas, logs, summary } = json;
+          console.log(`[useRunData] Vercel API OK — dataCount=${dataCount}`);
+
+          setData({
+            topStats: buildTopStats(dataCount, summary, formulaCount),
+            runtimeSeries: buildRuntimeSeries(summary, formulaCount),
+            engineColors: {
+              ...engineColors,
+              ...Object.fromEntries(
+                Object.keys(summary || {}).map((m, i) => [
+                  m,
+                  ['#0084ff', '#ff007a', '#8a2bff', '#00e5ff', '#9dff00', '#ffb300'][i % 6],
+                ])
+              ),
+            },
+            insights: buildInsights(summary),
+            tResult: buildTResult(formulas, summary, logs),
+            logs,
+            summary,
+            exportedAt: json.exportedAt,
+            usingMock: false,
+          });
+          setUsingMock(false);
+          setSource(json.source || 'live-db');
+          setLastRefresh(new Date());
+          setLoading(false);
+          return;
+        }
+      } catch (apiErr) {
+        console.warn('[useRunData] Vercel serverless API failed, falling back to JSON snapshot.');
+      }
+    }
+
+    // Try 3: Static JSON file (fallback)
     try {
       const response = await fetch('/run-log.json');
       if (response.ok) {
