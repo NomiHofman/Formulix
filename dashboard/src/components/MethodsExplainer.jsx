@@ -38,7 +38,7 @@ const methods = [
     ],
     techStack: ['SQL Server', 'T-SQL', 'sp_executesql', 'Stored Procedure'],
     complexity: 'נמוכה',
-    avgTime: '~10 שניות',
+    avgTime: '~10s',
     recommendation: true,
   },
   {
@@ -67,7 +67,7 @@ const methods = [
     ],
     techStack: ['.NET 10', 'Roslyn', 'CSharpScript', 'Microsoft.CodeAnalysis'],
     complexity: 'בינונית',
-    avgTime: '~20 שניות',
+    avgTime: '~20s',
     recommendation: false,
   },
   {
@@ -96,7 +96,7 @@ const methods = [
     ],
     techStack: ['Python 3.11', 'SymPy', 'NumPy', 'pyodbc'],
     complexity: 'בינונית',
-    avgTime: '~15 שניות',
+    avgTime: '~15s',
     recommendation: false,
   },
   {
@@ -126,7 +126,7 @@ const methods = [
     ],
     techStack: ['OpenAI GPT-4o-mini', '.NET 10', 'Roslyn', 'REST API'],
     complexity: 'גבוהה',
-    avgTime: '~22 שניות',
+    avgTime: '~22s',
     recommendation: false,
   },
 ];

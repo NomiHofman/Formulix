@@ -35,7 +35,7 @@ export const topStats = [
   {
     id: 'runtime',
     label: 'זמן ריצה ממוצע',
-    value: '5.74s',
+    value: 5.74,
     displayValue: '5.74s',
     delta: 'לנוסחה על 1M רשומות',
     icon: 'Timer',
@@ -77,7 +77,7 @@ export const insights = {
       id: 'avg',
       label: 'זמן ריצה ממוצע (1M)',
       sub: 'נמדד על 12 נוסחאות',
-      value: '9.8s',
+      value: '9.80s',
       icon: 'Gauge',
       tone: 'pink'
     },

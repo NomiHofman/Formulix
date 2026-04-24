@@ -32,7 +32,8 @@ export default function StatsCards() {
 
         const numericValue = typeof s.value === 'number' ? s.value :
           parseFloat(String(s.displayValue).replace(/[^0-9.]/g, '')) || 0;
-        const isTimeValue = s.id === 'bestTime' || s.displayValue?.includes('שניות');
+        const isRuntime = s.id === 'runtime';
+        const isTimeValue = !isRuntime && s.id === 'bestTime';
 
         return (
           <motion.div
@@ -53,12 +54,14 @@ export default function StatsCards() {
             </div>
             <div>
               <div className="stat-value">
-                {numericValue > 0 ? (
+                {isRuntime ? (
+                  s.displayValue
+                ) : numericValue > 0 ? (
                   <AnimatedNumber
                     value={numericValue}
                     duration={1200}
                     decimals={isTimeValue ? 2 : 0}
-                    suffix={isTimeValue ? ' שניות' : s.id === 'methods' ? '' : ''}
+                    suffix={isTimeValue ? 's' : ''}
                   />
                 ) : (
                   s.displayValue

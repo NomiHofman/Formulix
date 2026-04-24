@@ -37,6 +37,19 @@ const fmt = (n) =>
     ? `${(n / 1_000).toFixed(0)}K`
     : String(n);
 
+// Format a duration (in seconds) using compact developer-style units.
+//  < 1s   → "950ms"
+//  < 60s  → "5.74s"
+//  >= 60s → "2m 14s"
+export function formatDuration(seconds) {
+  if (seconds == null || isNaN(seconds)) return '—';
+  if (seconds < 1) return `${Math.round(seconds * 1000)}ms`;
+  if (seconds < 60) return `${seconds.toFixed(2)}s`;
+  const m = Math.floor(seconds / 60);
+  const s = Math.round(seconds - m * 60);
+  return s === 0 ? `${m}m` : `${m}m ${s}s`;
+}
+
 function buildRuntimeSeries(summary, formulaCount) {
   if (!summary || Object.keys(summary).length === 0) return mockRuntimeSeries;
 
@@ -97,8 +110,8 @@ function buildTopStats(dataCount, summary, formulaCount) {
     {
       id: 'runtime',
       label: 'זמן ריצה ממוצע',
-      value: overallAvg != null ? `${overallAvg.toFixed(2)}s` : '—',
-      displayValue: overallAvg != null ? `${overallAvg.toFixed(2)}s` : '—',
+      value: overallAvg ?? null,
+      displayValue: formatDuration(overallAvg),
       delta: 'לנוסחה על 1M רשומות',
       icon: 'Timer',
       tone: 'cyan',
@@ -119,14 +132,14 @@ function buildInsights(summary) {
   return {
     bestMethod: {
       name: friendlyName(bestName).toUpperCase(),
-      summary: `מנוע ${friendlyName(bestName)} השיג את זמן הריצה הממוצע הנמוך ביותר – ${bestData.avg.toFixed(2)} שניות על מיליון רשומות. כל המנועים מייצרים תוצאות זהות בסבילות IEEE-754 של נקודה צפה.`,
+      summary: `מנוע ${friendlyName(bestName)} השיג את זמן הריצה הממוצע הנמוך ביותר – ${formatDuration(bestData.avg)} על מיליון רשומות. כל המנועים מייצרים תוצאות זהות בסבילות IEEE-754 של נקודה צפה.`,
     },
     rows: [
       {
         id: 'avg',
         label: 'זמן ריצה ממוצע (1M)',
         sub: `על פני ${bestData.runs} נוסחאות`,
-        value: `${bestData.avg.toFixed(2)}s`,
+        value: formatDuration(bestData.avg),
         icon: 'Gauge',
         tone: 'pink',
       },
@@ -150,7 +163,7 @@ function buildInsights(summary) {
         id: 'fastest',
         label: 'נוסחה מהירה ביותר',
         sub: friendlyName(bestName),
-        value: `${bestData.min.toFixed(2)}s`,
+        value: formatDuration(bestData.min),
         icon: 'HardDrive',
         tone: 'violet',
       },
