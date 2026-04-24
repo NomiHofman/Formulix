@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { Activity } from 'lucide-react';
 import FormulixLogo from './FormulixLogo';
+import ConnectionStatusPill from './ConnectionStatusPill';
 
-export default function Header() {
+export default function Header({ source, lastRefresh, exportedAt, refresh, isLocalHost }) {
   return (
     <motion.header
       className="header"
@@ -26,11 +26,13 @@ export default function Header() {
         </div>
       </div>
 
-      <div className="header-meta">
-        <span className="pulse-dot" />
-        <Activity size={13} strokeWidth={2.2} />
-        <span>פעיל&nbsp;·&nbsp;מנועי החישוב מסונכרנים</span>
-      </div>
+      <ConnectionStatusPill
+        source={source}
+        lastRefresh={lastRefresh}
+        exportedAt={exportedAt}
+        refresh={refresh}
+        isLocalHost={isLocalHost}
+      />
     </motion.header>
   );
 }

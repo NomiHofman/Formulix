@@ -1093,84 +1093,186 @@ body {
    Mock Data Warning Banner
    ========================================================= */
 /* =========================================================
-   Connection Status Banner - LIVE DB INDICATOR
+   Status Pill — compact connection indicator (header)
    ========================================================= */
-.connection-banner {
-  display: flex;
-  justify-content: space-between;
+.status-pill-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.status-pill {
+  display: inline-flex;
   align-items: center;
-  padding: 12px 20px;
-  margin-bottom: 16px;
-  background: rgba(16, 16, 24, 0.92);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  animation: fadeIn 0.5s ease-out;
-}
-
-.connection-status {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.connection-icon {
-  font-size: 16px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.1); }
-}
-
-.connection-text {
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-}
-
-.auto-refresh-badge {
-  background: rgba(0, 255, 136, 0.1);
-  color: #00ff88;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 500;
-  border: 1px solid rgba(0, 255, 136, 0.2);
-}
-
-.connection-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.last-refresh {
-  color: var(--text-mute);
-  font-size: 12px;
-}
-
-.refresh-btn {
-  background: var(--surface-strong);
-  border: 1px solid var(--border);
+  gap: 9px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(20, 22, 36, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text);
-  padding: 6px 14px;
-  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  font-size: 12px;
   font-family: inherit;
-  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 
-.refresh-btn:hover {
-  background: var(--neon-blue);
-  border-color: var(--neon-blue);
-  color: white;
-  box-shadow: 0 0 20px rgba(0, 132, 255, 0.3);
+.status-pill:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(28, 32, 50, 0.9);
+  box-shadow: 0 4px 22px rgba(0, 0, 0, 0.35);
 }
 
-.refresh-btn:active {
-  transform: scale(0.95);
+.status-pill__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pillPulse 1.9s ease-in-out infinite;
+}
+
+@keyframes pillPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.18); }
+}
+
+.status-pill__label {
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.status-pill__time {
+  color: var(--text-mute);
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  padding-inline-start: 9px;
+  margin-inline-start: 3px;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-pop {
+  position: absolute;
+  top: calc(100% + 10px);
+  inset-inline-end: 0;
+  z-index: 60;
+  width: 320px;
+  padding: 14px;
+  background: rgba(14, 16, 28, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(14px);
+  transform-origin: top right;
+}
+
+.status-pop::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  inset-inline-end: 22px;
+  width: 12px;
+  height: 12px;
+  background: rgba(14, 16, 28, 0.96);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+}
+
+.status-pop__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.status-pop__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.status-pop__title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.status-pop__sub {
+  font-size: 11.5px;
+  color: var(--text-mute);
+  line-height: 1.45;
+}
+
+.status-pop__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 12px 0;
+}
+
+.status-pop__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--text-dim);
+}
+
+.status-pop__row svg {
+  color: var(--text-mute);
+  flex-shrink: 0;
+}
+
+.status-pop__row-label {
+  color: var(--text-mute);
+}
+
+.status-pop__row-val {
+  color: var(--text);
+  margin-inline-start: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.status-pop__refresh {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, rgba(0, 132, 255, 0.18), rgba(255, 0, 122, 0.12));
+  border: 1px solid rgba(0, 132, 255, 0.32);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.status-pop__refresh:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(0, 132, 255, 0.3), rgba(255, 0, 122, 0.2));
+  border-color: rgba(0, 132, 255, 0.55);
+  box-shadow: 0 4px 18px rgba(0, 132, 255, 0.25);
+}
+
+.status-pop__refresh:disabled {
+  opacity: 0.7;
+  cursor: progress;
 }
 
 .mock-banner {
