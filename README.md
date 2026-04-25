@@ -36,6 +36,8 @@
 לפי מסמך המבחן: **קוד + סקריפטים**, **תצלומי מסך ממסד הנתונים**, **דוח מסכם**, **קישור GitHub** לריפו אישי, **מסך דיווח בענן** (קישור עובד).  
 רשימה מפורטת, מיפוי עמידה בדרישות, ורשימת צילומי DB — ב־**[`docs/SUBMISSION_CHECKLIST.md`](docs/SUBMISSION_CHECKLIST.md)**.
 
+> **סנכרון Git:** שינויים אצלך בדיסק (כולל אופטימיזציית מנועים, `AzureOptimizeFast`, ניקוי סודות) **אינם** נראים בבודק עד `git add` → `commit` → `git push` ל-`main`. אחרי push, ודאי ב-GitHub שהקבצים עודכנו.
+
 ---
 
 ## 📁 מבנה הפרויקט
@@ -46,6 +48,8 @@ Formulix/
 │   ├── FormulixCreate.sql          # טבלאות, 1M רשומות, 12 נוסחאות בסיס, usp_RunDynamicFormula
 │   ├── AddComplexFormulas.sql      # +8 נוסחאות (סה״כ 20) — sqrt, log, abs, power
 │   ├── FormulixChek.sql            # בדיקות / אימות
+│   ├── AzureOptimizeFast.sql       # אופטימיזציה לסבב Azure (HEAP, אינדקסים, SP) – פעם אחת לריצה כבדה
+│   ├── SubmissionScreenshots.sql  # שאילתות לצילומי DB להגשה
 │   ├── AzureSetup.sql              # הקמת DB בענן (אופציונלי)
 │   ├── AzureInsertData.sql
 │   ├── AzureStoredProcedure.sql
@@ -69,6 +73,7 @@ Formulix/
 │   └── export_logs.py              # 📤 ייצוא לדשבורד
 │
 ├── 📂 dashboard/                   # 🎨 React Dashboard
+│   ├── api/                        # Vercel Serverless – חיבור ל-Azure SQL (summary, health, …)
 │   └── src/
 │       ├── components/
 │       │   ├── Header.jsx
@@ -87,14 +92,41 @@ Formulix/
 │
 └── 📂 docs/
     ├── SUMMARY_REPORT.md            # 📋 דוח מסכם מקצועי
-    └── SUBMISSION_CHECKLIST.md     # רשימת קבצים מלאה להגשה
+    ├── SUBMISSION_CHECKLIST.md      # רשימת קבצים + צילומי DB
+    ├── RUN_AZURE_FAST.md            # סדר הרצה מלא מול Azure + Scale up
+    └── RUN_FOUR_ENGINES.md          # LocalDB, משתנים, תקלות
 ```
 
 ---
 
 ## 🚀 הוראות הרצה
 
-**רשת אחרת / פורט 1433 / Azure מול LocalDB / בלי Cursor:** [`docs/RUN_FOUR_ENGINES.md`](docs/RUN_FOUR_ENGINES.md) — סדר מדויק, משתני סביבה, ופרומפט ל-Gemini לתקלות.
+**רשת / פיירוול / Azure מול LocalDB:** [`docs/RUN_FOUR_ENGINES.md`](docs/RUN_FOUR_ENGINES.md) — פתרון תקלות.  
+**הרצה מלאה מול Azure SQL (אופטימיזציה + 4 מנועים + זמנים):** [`docs/RUN_AZURE_FAST.md`](docs/RUN_AZURE_FAST.md).  
+**צילומי מסך DB להגשה:** [`DB/SubmissionScreenshots.sql`](DB/SubmissionScreenshots.sql) (שאילתות מוכנות; ראו [`docs/SUBMISSION_CHECKLIST.md`](docs/SUBMISSION_CHECKLIST.md)).
+
+### משתני סביבה (בלי סודות ב-Git)
+
+| קהל | משתנה | הערה |
+|-----|--------|------|
+| .NET (כל `dotnet run` + `Formulix.API`) | `FORMULIX_DB_CONNECTION` | מחרוזת **ADO.NET** (Azure → *Connection strings*). אם **לא** מוגדר: ברירת מחדל **LocalDB** `Formulix` (בלי סיסמה). |
+| Python (`formulix_sympy`, `tools/compare_results.py`, `export_logs.py`) | `FORMULIX_DB_ODBC` | מחרוזת **ODBC** (אותו שרת/DB, פורמט אחר). אם **לא** מוגדר: **LocalDB** כמו בטולס. |
+| Vercel – פונקציות `/api/*` (דשבורד בפרודקשן) | `AZURE_SQL_SERVER`, `AZURE_SQL_DATABASE`, `AZURE_SQL_USER`, `AZURE_SQL_PASSWORD` | ב-**Vercel → Project → Environment Variables** (לא בקוד). בלי הערכים האלה, `/api/summary` מחזיר 503. |
+
+**PowerShell (לפני `dotnet` / `python` מול Azure, באותו חלון):**
+```powershell
+$env:FORMULIX_DB_CONNECTION = "<ADO.NET מ-Azure Portal – כולל סיסמה, ללא {your_password}>"
+$env:FORMULIX_DB_ODBC      = "<ODBC Driver 17/18, אותו DB ומשתמש>"
+```
+
+**חומת אzure:** אפשרי `timeout` / 500 – הוסיפי *Client IP* (מקומי) או IP יוצא של Vercel (פרודקשן), ראו `RUN_FOUR_ENGINES.md`.
+
+### שלב 0 (אופציונלי, Azure – פעם אחת לסבב “מהיר”)
+
+אחרי `USE FormulixDB` (או שם ה-DB שלך), הרצה ב-Query Editor / SSMS:
+
+- [`DB/AzureOptimizeFast.sql`](DB/AzureOptimizeFast.sql) — `TRUNCATE` תוצאות, HEAP+אינדקסים, פרוצדורה מותאמת ל-bulk.  
+- אם **לא** משתמשים ב-Azure, אפשר לדלג (LocalDB + סכימה מ-`FormulixCreate.sql`).
 
 ### שלב 1: הקמת מסד הנתונים
 
@@ -112,52 +144,54 @@ Formulix/
 
 `AddComplexFormulas.sql` מוסיף **8 נוסחאות** נוספות (סה״כ **20** נוסחאות ב-`t_targil`)
 
-### שלב 2: הרץ שיטה 1 — SQL Dynamic
+כל הפקודות הבאות — מ**שורש הריפו** (התיקייה שבה קיימים `DB\`, `src\Formulix\`, `python\`).
+
+### שלב 2: שיטה 1 — SQL Dynamic
 
 ```powershell
-cd src\Formulix
-dotnet run --project Formulix.SqlDynamic
+dotnet run --project src\Formulix\Formulix.SqlDynamic --configuration Release
 ```
 
-### שלב 3: הרץ שיטה 2 — Roslyn
+### שלב 3: שיטה 2 — Roslyn
 
 ```powershell
-dotnet run --project Formulix.RoslynRunner
+dotnet run --project src\Formulix\Formulix.RoslynRunner --configuration Release
 ```
 
-### שלב 4: הרץ שיטה 3 — Python SymPy
+### שלב 4: שיטה 3 — Python SymPy
 
 ```powershell
 cd python\formulix_sympy
-pip install -r requirements.txt
-python main.py
+py -3 -m pip install -r requirements.txt
+py -3 main.py
+cd ..\..
 ```
 
-### שלב 5 (אופציונלי): הרץ שיטה 4 — AI
+### שלב 5 (אופציונלי): שיטה 4 — AI
 
 ```powershell
-$env:OPENAI_API_KEY = "sk-..."
-dotnet run --project Formulix.AITranslator
+# $env:OPENAI_API_KEY = "sk-..."   # אם חסר – רץ Mock דטרמיניסטי
+dotnet run --project src\Formulix\Formulix.AITranslator --configuration Release
 ```
 
 ### שלב 6: אמת תוצאות
 
 ```powershell
-python tools\compare_results.py
+py -3 tools\compare_results.py
 ```
 
 פלט צפוי:
-```
+```text
 RESULT: all methods produced IDENTICAL results (within tolerance).
 ```
 
-### שלב 7: ייצא לדשבורד
+### שלב 7: ייצא לדשבורד (אופציונלי, גיבוי JSON)
 
 ```powershell
-python tools\export_logs.py
+py -3 tools\export_logs.py
 ```
 
-### שלב 8: הרץ את הדשבורד
+### שלב 8: דשבורד מקומי
 
 ```powershell
 cd dashboard
@@ -165,7 +199,8 @@ npm install
 npm run dev
 ```
 
-פתח http://localhost:5173
+פתחי את הכתובת ש־Vite מדפיס (לרוב `http://localhost:5173`; אם התפוס – פורט אחר).  
+ב**מקומי** לרוב: ניסיון `VITE_API_URL` + `Formulix.API` — ראו סעיף *חיבור חי* למטה. ב-**Vercel**: נתונים מ־`/api/summary` אם `AZURE_SQL_*` מוגדר.
 
 ---
 
@@ -212,26 +247,39 @@ npx vercel --prod
 
 | מצב | סימון | תיאור |
 |-----|-------|-------|
-| 🟢 **Live DB** | מחובר לDB חי | API מתחבר ל-Azure SQL בזמן אמת |
+| 🟢 **Live DB** | מחובר ל-DB חי | מקומי: Kestrel + `VITE_API_URL`. פרודקשן: `GET /api/summary` (Vercel) → Azure SQL |
 | 🟡 **JSON** | קובץ סטטי | נתונים מקובץ `run-log.json` |
 | 🔴 **Mock** | נתוני הדגמה | נתונים לדוגמה בלבד |
 
-### הפעלת מצב Live DB
+### הפעלת מצב Live DB (מקומי)
 
-```bash
-# 1. הפעל את ה-API מקומית
-cd src/Formulix/Formulix.API
+1. `FORMULIX_DB_CONNECTION` מכוונן (או LocalDB).  
+2. API:
+
+```powershell
+cd src\Formulix\Formulix.API
 dotnet run
+# חכי ל-URL+פורט (Kestrel / launchSettings) — בדרך כלל http://localhost:5xxx
+```
 
-# 2. הפעל את הדשבורד
+3. דשבורד (אותו מחשב, חלון נפרד):
+
+```powershell
 cd dashboard
-set VITE_API_URL=http://localhost:5000
+$env:VITE_API_URL = "http://localhost:5000"   # או הפורט שה-API הדפיס
 npm run dev
 ```
 
-### פריסה לענן
+הדשבורד בוחר: Live דרך ה-API → אחרת `public/run-log.json` → אחרת mock (ראו `useRunData.js`).
 
-עיין בקובץ **`DEPLOY_LIVE.md`** למדריך מלא הכולל:
+### Live DB בפרודקשן (Vercel)
+
+- `dashboard` נפרס ל-**Vercel**; נתונים חיים מ־`GET /api/summary` (Node + `mssql`) — רק אם `AZURE_SQL_SERVER` / `AZURE_SQL_USER` / `AZURE_SQL_PASSWORD` (ו-`AZURE_SQL_DATABASE` אם לא ברירת מחדל) מוגדרים ב-**Vercel Environment Variables**.  
+- **GitHub Action** *Refresh DB Snapshot* (אופציונלי) דורש Secret `FORMULIX_DB_ODBC` — אם אין, אפשר להשבית את ה-Workflow; הדשבורד ב-Vercel **לא** תלוי בו אם Live עובר.
+
+### פריסה לענן (מלא)
+
+עייני בקובץ **`DEPLOY_LIVE.md`** — Azure SQL, App Service, Vercel, כולל:
 - יצירת Azure SQL Database (חינם לשנה!)
 - העלאת ה-API ל-Azure App Service
 - הגדרת Vercel עם משתני סביבה
@@ -295,11 +343,15 @@ npm run dev
 | קובץ | מטרה |
 |------|------|
 | `docs/SUBMISSION_CHECKLIST.md` | **הגשה לפי מבדק רמה ג'** — מיפוי דרישות, רשימת קוד, **תצלומי DB**, GitHub, ענן |
+| `DB/SubmissionScreenshots.sql` | שאילתות מוכנות לצילומי DB (להריץ ב-SSMS / Query Editor) |
+| `docs/RUN_AZURE_FAST.md` | סבב מלא: `AzureOptimizeFast.sql` + 4 מנועים + `compare_results` |
 | `tools/compare_results.py` | סקריפט השוואה (נדרש במבחן) |
-| `tools/export_logs.py` | ייצוא נתונים לדשבורד |
+| `tools/export_logs.py` | ייצוא `run-log.json` (גיבוי; ב-Vercel אפשר חי בלי קובץ) |
 | `docs/SUMMARY_REPORT.md` | דוח מסכם מקצועי |
 | `DB/FormulixCreate.sql` + `DB/AddComplexFormulas.sql` | סכמת DB ו-**20** נוסחאות |
+| `DB/AzureOptimizeFast.sql` | אופטימיזציה לריצה כבדה ב-Azure (אופציונלי ל-LocalDB) |
 | `dashboard/src/components/MethodsExplainer.jsx` | הסבר השיטות |
+| `dashboard/.env.example` | דוגמה: `VITE_API_URL` + **הערה** ל-`AZURE_SQL_*` ב-Vercel (לא `VITE_`) |
 
 ---
 

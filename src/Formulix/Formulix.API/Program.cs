@@ -18,11 +18,11 @@ var app = builder.Build();
 
 app.UseCors("AllowDashboard");
 
-// Connection string - Azure SQL Database
+// Connection string: set FORMULIX_DB_CONNECTION in App Service / local env — never commit passwords.
 string GetConnectionString()
 {
-    return Environment.GetEnvironmentVariable("FORMULIX_DB_CONNECTION") 
-        ?? "Server=tcp:formulix-srv-22042026.database.windows.net,1433;Initial Catalog=FormulixDB;Persist Security Info=False;User ID=formulixadmin;Password=Nh0583262051;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+    return Environment.GetEnvironmentVariable("FORMULIX_DB_CONNECTION")
+        ?? "Server=(localdb)\\MSSQLLocalDB;Database=Formulix;Trusted_Connection=True;TrustServerCertificate=True;Connection Timeout=30;";
 }
 
 // GET / - Friendly landing page with list of available endpoints

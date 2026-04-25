@@ -9,7 +9,9 @@ namespace Formulix.RoslynRunner;
 
 internal static class Program
 {
-    private const int BatchSize = 5000;
+    // Bulk-insert batch size for Azure SQL.
+    // Anything below ~50K wastes round-trips; SqlBulkCopy itself happily streams larger batches.
+    private const int BatchSize = 50_000;
 
     private static async Task Main()
     {
@@ -46,41 +48,19 @@ internal static class Program
                 BenchmarkTimer timer = new();
                 timer.Start();
 
-                ScriptRunner<double> runner = compiledFormulas[formula.TargilId]; 
-                List<FormulaResult> batch = new(BatchSize);
+                ScriptRunner<double> runner = compiledFormulas[formula.TargilId];
 
-                await foreach (DataRecord row in repository.StreamDataAsync())
-                {
-                    Globals globals = new()
-                    {
-                        a = row.A,
-                        b = row.B,
-                        c = row.C,
-                        d = row.D
-                    };
+                // Stream rows from t_data → evaluate → yield results.
+                // The repository's InsertResultsStreamAsync opens ONE long-lived connection
+                // and uses SqlBulkCopy with TABLOCK + 50K batches. This is the single biggest
+                // perf win against Azure SQL (vs. opening a connection per batch).
+                IAsyncEnumerable<FormulaResult> resultStream = EvaluateStreamAsync(
+                    repository,
+                    runner,
+                    formula.TargilId,
+                    MethodNames.Roslyn);
 
-                    double result = await runner(globals);
-
-                    batch.Add(new FormulaResult
-                    {
-                        DataId = row.DataId,
-                        TargilId = formula.TargilId,
-                        Method = MethodNames.Roslyn,
-                        Result = result
-                    });
-
-                    if (batch.Count >= BatchSize)
-                    {
-                        await repository.InsertResultsBulkAsync(batch);
-                        batch.Clear();
-                    }
-                }
-
-                if (batch.Count > 0)
-                {
-                    await repository.InsertResultsBulkAsync(batch);
-                    batch.Clear();
-                }
+                await repository.InsertResultsStreamAsync(resultStream, batchSize: BatchSize);
 
                 double seconds = timer.StopSeconds();
 
@@ -104,5 +84,33 @@ internal static class Program
 
         Console.WriteLine("Press any key to close...");
         Console.ReadKey();
+    }
+
+    private static async IAsyncEnumerable<FormulaResult> EvaluateStreamAsync(
+        IFormulixRepository repository,
+        ScriptRunner<double> runner,
+        int targilId,
+        string methodName)
+    {
+        await foreach (DataRecord row in repository.StreamDataAsync())
+        {
+            Globals globals = new()
+            {
+                a = row.A,
+                b = row.B,
+                c = row.C,
+                d = row.D
+            };
+
+            double result = await runner(globals);
+
+            yield return new FormulaResult
+            {
+                DataId = row.DataId,
+                TargilId = targilId,
+                Method = methodName,
+                Result = result
+            };
+        }
     }
 }

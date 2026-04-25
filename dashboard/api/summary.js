@@ -1,23 +1,16 @@
 import sql from 'mssql';
-
-const config = {
-  server: process.env.AZURE_SQL_SERVER || 'formulix-srv-22042026.database.windows.net',
-  database: process.env.AZURE_SQL_DATABASE || 'FormulixDB',
-  user: process.env.AZURE_SQL_USER || 'formulixadmin',
-  password: process.env.AZURE_SQL_PASSWORD,
-  port: 1433,
-  options: {
-    encrypt: true,
-    trustServerCertificate: false,
-  },
-  connectionTimeout: 15000,
-  requestTimeout: 30000,
-};
+import { getMssqlConfig } from './lib/azureConfig.js';
 
 let pool = null;
 
 async function getPool() {
   if (pool) return pool;
+  const { error, config } = getMssqlConfig();
+  if (error) {
+    const err = new Error(error);
+    err.statusCode = 503;
+    throw err;
+  }
   pool = await sql.connect(config);
   return pool;
 }
@@ -76,8 +69,9 @@ export default async function handler(req, res) {
     });
   } catch (err) {
     pool = null;
-    return res.status(500).json({
-      error: 'Database error',
+    const code = err.statusCode === 503 ? 503 : 500;
+    return res.status(code).json({
+      error: err.statusCode === 503 ? 'Configuration required' : 'Database error',
       detail: err.message,
     });
   }

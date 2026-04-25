@@ -10,7 +10,9 @@ namespace Formulix.AITranslator;
 
 internal static class Program
 {
-    private const int BatchSize = 5000;
+    // Bulk-insert batch size for Azure SQL.
+    // Anything below ~50K wastes round-trips; SqlBulkCopy itself happily streams larger batches.
+    private const int BatchSize = 50_000;
 
     private static async Task Main()
     {
@@ -19,7 +21,7 @@ internal static class Program
             DatabaseSettings settings = new();
             IFormulixRepository repository = new SqlFormulixRepository(settings);
 
-            // ניסיון להשתמש ב-AI אמיתי
+            // Try the real OpenAI service; fall back to a deterministic Mock if it fails.
             IFormulaTranslationService primaryService;
             IFormulaTranslationService fallbackService = new MockFormulaTranslationService();
 
@@ -85,39 +87,17 @@ internal static class Program
                 timer.Start();
 
                 ScriptRunner<double> runner = compiledRunners[formula.TargilId];
-                List<FormulaResult> batch = new(BatchSize);
 
-                await foreach (DataRecord row in repository.StreamDataAsync())
-                {
-                    Globals globals = new()
-                    {
-                        a = row.A,
-                        b = row.B,
-                        c = row.C,
-                        d = row.D
-                    };
+                // Stream rows from t_data → evaluate → yield results.
+                // InsertResultsStreamAsync uses a single long-lived connection +
+                // SqlBulkCopy with TABLOCK at 50K-row batches — critical for Azure SQL throughput.
+                IAsyncEnumerable<FormulaResult> resultStream = EvaluateStreamAsync(
+                    repository,
+                    runner,
+                    formula.TargilId,
+                    MethodNames.AITranslated);
 
-                    double result = await runner(globals);
-
-                    batch.Add(new FormulaResult
-                    {
-                        DataId = row.DataId,
-                        TargilId = formula.TargilId,
-                        Method = MethodNames.AITranslated,
-                        Result = result
-                    });
-
-                    if (batch.Count >= BatchSize)
-                    {
-                        await repository.InsertResultsBulkAsync(batch);
-                        batch.Clear();
-                    }
-                }
-
-                if (batch.Count > 0)
-                {
-                    await repository.InsertResultsBulkAsync(batch);
-                }
+                await repository.InsertResultsStreamAsync(resultStream, batchSize: BatchSize);
 
                 double seconds = timer.StopSeconds();
 
@@ -141,5 +121,33 @@ internal static class Program
 
         Console.WriteLine("Press any key to close...");
         Console.ReadKey();
+    }
+
+    private static async IAsyncEnumerable<FormulaResult> EvaluateStreamAsync(
+        IFormulixRepository repository,
+        ScriptRunner<double> runner,
+        int targilId,
+        string methodName)
+    {
+        await foreach (DataRecord row in repository.StreamDataAsync())
+        {
+            Globals globals = new()
+            {
+                a = row.A,
+                b = row.B,
+                c = row.C,
+                d = row.D
+            };
+
+            double result = await runner(globals);
+
+            yield return new FormulaResult
+            {
+                DataId = row.DataId,
+                TargilId = targilId,
+                Method = methodName,
+                Result = result
+            };
+        }
     }
 }
