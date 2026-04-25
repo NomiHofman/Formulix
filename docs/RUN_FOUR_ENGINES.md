@@ -15,7 +15,7 @@
 ב-**Azure Query Editor** (או SSMS), הריצי את הסקריפט:
 
 ```
-DB\AzureOptimize.sql
+DB\AzureOptimizeFast.sql
 ```
 
 מה הוא עושה:

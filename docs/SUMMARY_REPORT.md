@@ -181,11 +181,13 @@
 
 ```
 Formulix/
-├── DB/                          # סקריפטי SQL
-│   ├── FormulixCreate.sql
-│   ├── AddComplexFormulas.sql
-│   ├── FormulixChek.sql
-│   ├── AzureSetup.sql, AzureInsertData.sql, AzureStoredProcedure.sql, AzureSampleLogs.sql
+├── DB/                          # סקריפטי SQL (6 קבצים, ללא חפיפות)
+│   ├── FormulixCreate.sql           # LocalDB: סכמה + 1M שורות + 12 נוסחאות + SP
+│   ├── AddComplexFormulas.sql       # +8 נוסחאות (סה״כ 20)
+│   ├── AzureSetup.sql               # Azure: טבלאות + 20 נוסחאות
+│   ├── AzureInsertData.sql          # Azure: מילוי 1M שורות
+│   ├── AzureOptimizeFast.sql        # Azure: HEAP + אינדקסים + SP מהיר
+│   └── SubmissionScreenshots.sql    # שאילתות לצילומי הגשה
 │
 ├── src/Formulix/                # קוד C# (.NET 10)
 │   ├── Formulix.Shared/

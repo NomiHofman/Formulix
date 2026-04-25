@@ -53,16 +53,13 @@
 
 ```
 Formulix/
-├── 📂 DB/                          # סקריפטי SQL
-│   ├── FormulixCreate.sql          # טבלאות, 1M רשומות, 12 נוסחאות בסיס, usp_RunDynamicFormula
+├── 📂 DB/                          # סקריפטי SQL (6 קבצים, ללא חפיפות)
+│   ├── FormulixCreate.sql          # LocalDB: טבלאות + FK + 1M רשומות + 12 נוסחאות + usp_RunDynamicFormula
 │   ├── AddComplexFormulas.sql      # +8 נוסחאות (סה״כ 20) — sqrt, log, abs, power
-│   ├── FormulixChek.sql            # בדיקות / אימות
-│   ├── AzureOptimizeFast.sql       # אופטימיזציה לסבב Azure (HEAP, אינדקסים, SP) – פעם אחת לריצה כבדה
-│   ├── SubmissionScreenshots.sql  # שאילתות לצילומי DB להגשה
-│   ├── AzureSetup.sql              # הקמת DB בענן (אופציונלי)
-│   ├── AzureInsertData.sql
-│   ├── AzureStoredProcedure.sql
-│   └── AzureSampleLogs.sql
+│   ├── AzureSetup.sql              # Azure: יצירת טבלאות + 20 נוסחאות
+│   ├── AzureInsertData.sql         # Azure: מילוי 1M שורות ב-t_data
+│   ├── AzureOptimizeFast.sql       # Azure: HEAP + אינדקסים + SP מותאם (TABLOCK + MAXDOP 0)
+│   └── SubmissionScreenshots.sql   # שאילתות לצילומי DB להגשה
 │
 ├── 📂 src/Formulix/                # קוד C# (.NET 10)
 │   ├── Formulix.Shared/            # מודלים, Repository, Utilities
@@ -130,7 +127,7 @@ $env:FORMULIX_DB_ODBC      = "<ODBC Driver 17/18, אותו DB ומשתמש>"
 
 **אחרי `git pull` — אם הכל “לא מקושר ל-DB”:** ב-repo אין מחרוזות חיבור (by design). צרי `azure.env` מול [`azure.env.example`](azure.env.example) והריצי `Set-Location` לתיקיית הפרויקט ואז: `. .\scripts\Apply-AzureEnv.ps1` לפני כל מנוע.
 
-**למה אי אפשר “להעתיק” ל-DB בדיוק את אחרי-הרצה ב-Azure, בלי export:** הזמנים תלויים ב-DTU, רשת ומכונה — אי אפשר לנבא אותם מבחוץ. **לדמו/לבודק** (בלי גישה ל-DB ב-Azure): אחרי `FormulixCreate` + `AddComplexFormulas` הריצי ב-SSMS/Query Editor [`DB/AzureSampleLogs.sql`](DB/AzureSampleLogs.sql) — זה **מייצר `t_log` מייצג** (20 נוסחאות × 4 שיטות) עם **זמנים אופייניים**, לא מספרי מד-מד מ-Azure. **במקביל** — מומלץ להריץ את המנועים מול **LocalDB** כדי לוודא שהקוד תקין; `t_results` ה“אמיתי” (מיליוני שורות) **נבנה בזמן ריצה** על-ידי המנועים, לא בזינון ידני. לעדכון JSON לדשבורד מקומי: `py -3 tools\export_logs.py` (אחרי שיש `t_log`).
+**למה אי אפשר "להעתיק" ל-DB בדיוק את אחרי-הרצה ב-Azure, בלי export:** הזמנים תלויים ב-DTU, רשת ומכונה — אי אפשר לנבא אותם מבחוץ. **לדמו/לבודק** (בלי גישה ל-DB ב-Azure): הריצי את המנועים מול **LocalDB** כדי לוודא שהקוד תקין; `t_results` ה"אמיתי" (מיליוני שורות) **נבנה בזמן ריצה** על-ידי המנועים. לדשבורד מקומי – הקובץ [`dashboard/public/run-log.json`](dashboard/public/run-log.json) הוא **snapshot אמיתי** מהריצה ב-Azure (יוצא ב-`py -3 tools\export_logs.py`).
 
 **חומת אzure:** אפשרי `timeout` / 500 – הוסיפי *Client IP* (מקומי) או IP יוצא של Vercel (פרודקשן), ראו `RUN_FOUR_ENGINES.md`.
 

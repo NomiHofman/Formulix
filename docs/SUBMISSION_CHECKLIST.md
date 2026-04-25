@@ -68,7 +68,7 @@
 | `README.md` | קריאה ראשונה — הרצה, מבנה, Vercel, DB חי |
 | `docs/SUMMARY_REPORT.md` | **דוח מסכם** מקצועי (תקציר, ארכיטקטורה, שיטות, מסקנות) — נדרש במבחן |
 | `docs/SUBMISSION_CHECKLIST.md` | מסמך זה: רשימת הגשה + צילומים |
-| `DB/` | כל קבצי ה-SQL: `FormulixCreate.sql`, `AddComplexFormulas.sql`, `FormulixChek.sql`, `AzureSetup.sql`, `AzureInsertData.sql`, `AzureStoredProcedure.sql`, `AzureSampleLogs.sql` |
+| `DB/` | כל קבצי ה-SQL: `FormulixCreate.sql`, `AddComplexFormulas.sql`, `AzureSetup.sql`, `AzureInsertData.sql`, `AzureOptimizeFast.sql`, `SubmissionScreenshots.sql` |
 | `src/Formulix/` | כל פרויקטי ה- .NET: `Formulix.Shared`, `Formulix.SqlDynamic`, `Formulix.RoslynRunner`, `Formulix.AITranslator`, `Formulix.API` |
 | `python/formulix_sympy/` | Python SymPy: `main.py`, `runner.py`, `requirements.txt` ושאר המקור |
 | `tools/` | `compare_results.py`, `export_logs.py` |
