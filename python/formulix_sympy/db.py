@@ -37,9 +37,13 @@ _persistent_conn: Optional[pyodbc.Connection] = None
 
 def _tune_connection(conn: pyodbc.Connection) -> None:
     """Standard pyodbc tuning for high-throughput inserts to SQL Server."""
-    # Force UTF-8 to match SQL Server's expected wide-string encoding;
-    # without this pyodbc can fall back to slow per-character conversions.
-    conn.setencoding(encoding="utf-8")
+    # IMPORTANT: do NOT call conn.setencoding("utf-8") here.
+    # Combining setencoding("utf-8") + cursor.fast_executemany = True
+    # corrupts VARCHAR parameters on Azure SQL (CP1252 collation) — the
+    # ODBC bulk path interprets the UTF-8 buffer as code-page bytes and
+    # writes "?????" instead of e.g. "PythonSymPy".
+    # Default pyodbc behavior sends Python strings as UTF-16LE via the
+    # wide-char path, which SQL Server narrows correctly to VARCHAR.
     conn.setdecoding(pyodbc.SQL_CHAR, encoding="utf-8")
     conn.setdecoding(pyodbc.SQL_WCHAR, encoding="utf-8")
     # Manual transactions: commit() is cheap, autocommit per row is murder.

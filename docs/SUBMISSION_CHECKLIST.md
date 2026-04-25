@@ -36,21 +36,21 @@
 
 ### 1א. תצלומי מסך מבסיס הנתונים (לפי המסמך: "תצלומי מסך של בסיס הנתונים")
 
-מומלץ ליצור תיקייה `docs/screenshots/` (או `submission/screenshots/`) ולשמור **PNG** עם שמות ברורים:
+✅ **בוצע** — כל הצילומים שמורים ב־[`docs/screenshots/`](./screenshots/) ומלווים ב־[README ייעודי](./screenshots/README.md) שמסביר מה כל אחד מוכיח.
 
-| # | מה לצלם | שם קובץ מוצע (דוגמה) |
-|---|----------|------------------------|
-| 1 | **SSMS** — עץ הטבלאות תחת מסד `Formulix`: `t_data`, `t_targil`, `t_results`, `t_log` | `01-tables-tree.png` |
-| 2 | **מבנה `t_data`** — חלון Design / סקריפט `sp_help` / עמודות: `data_id`, `a`, `b`, `c`, `d` | `02-t_data-columns.png` |
-| 3 | **מבנה `t_targil`** — `targil_id`, `targil`, `tnai`, `targil_false` | `03-t_targil-columns.png` |
-| 4 | **מבנה `t_results`** + **`t_log`** | `04-t_results-t_log.png` |
-| 5 | **אימות מיליון רשומות** — `SELECT COUNT(*) FROM t_data` → **1000000** | `05-t_data-count-1M.png` |
-| 6 | **דגימה מ־`t_targil`** — ~5–20 שורות (מראה מגוון: פשוט, מורכב, תנאי) | `06-t_targil-sample.png` |
-| 7 | **דגימה מ־`t_results`** (כמה `method` / `targil_id` שונים) | `07-t_results-sample.png` |
-| 8 | **דגימה מ־`t_log`** — `method`, `run_time` בשניות | `08-t_log-sample.png` |
-| 9 | (אופציונלי) **Stored Procedure** `usp_RunDynamicFormula` ב-SSMS | `09-usp_RunDynamicFormula.png` |
+| # | קובץ | מה הוא מראה |
+|---|------|-------------|
+| 1 | `01-t_data-sample.png` | טבלת `t_data` ועמודותיה (`data_id, a, b, c, d`) |
+| 2 | `02-tables-tree-and-t_log.png` | עץ הסכמה (`t_data, t_log, t_results, t_targil`) + דגימה מ־`t_log` |
+| 3 | `03-t_results-sample.png` | טבלת `t_results` (`data_id, targil_id, method, result, results_id`) |
+| 4 | `04-t_targil-sample.png` | טבלת `t_targil` (`targil_id, targil, tnai, targil_false`) |
+| 5 | `05-t_data-count-1M.png` | **`SELECT COUNT(*) FROM t_data` → 1,000,000** ⭐ |
+| 6 | `06-t_targil-all-20-formulas.png` | כל **20** הנוסחאות בטבלת `t_targil` |
+| 7 | `07-t_log-methods-comparison.png` | **השוואת ביצועים בין כל 4 השיטות** (`SQLDynamic`, `Roslyn`, `AITranslated`, `PythonSymPy`) ⭐ |
+| 8 | `08-t_results-cross-methods.png` | תוצאות עבור אותו `data_id` ב‑method-ים שונים |
+| 9 | `09-usp_RunDynamicFormula.png` | קיומה של ה‑Stored Procedure `usp_RunDynamicFormula` |
 
-במצגת/קובץ Word להגשה: שזף את אותם צילומים או הדבק לינקים לריפו שבו התיקייה קיימת.
+השאילתות שהפיקו את הצילומים שמורות ב־[`DB/SubmissionScreenshots.sql`](../DB/SubmissionScreenshots.sql) – ניתן להריץ אותן בכל עת לשחזור.
 
 ---
 
