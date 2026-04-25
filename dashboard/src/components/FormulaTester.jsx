@@ -6,6 +6,7 @@ import {
   Bot
 } from 'lucide-react';
 import { scaleIn } from '../utils/scrollAnimations';
+import BouncyIconWrap from './BouncyIconWrap';
 
 /* =========================================================
    FormulaTester (Hebrew)
@@ -105,7 +106,9 @@ export default function FormulaTester({ initialFormula }) {
       <div className="panel-header">
         <div>
           <div className="panel-title">
-            <FlaskConical size={20} className="icon-violet" />
+            <BouncyIconWrap name="ft-header-flask">
+              <FlaskConical size={20} className="icon-violet" />
+            </BouncyIconWrap>
             סביבת ניסוי נוסחאות
           </div>
           <div className="panel-subtitle">
@@ -122,7 +125,9 @@ export default function FormulaTester({ initialFormula }) {
         {/* Formula Input */}
         <div className="tester-formula-section">
           <label className="tester-label">
-            <Calculator size={14} />
+            <BouncyIconWrap name="ft-label-calculator">
+              <Calculator size={14} />
+            </BouncyIconWrap>
             נוסחה
             {fromAI && (
               <span className="from-ai-badge">
@@ -170,7 +175,9 @@ export default function FormulaTester({ initialFormula }) {
         {/* Sample Formulas */}
         <div className="tester-samples">
           <label className="tester-label">
-            <Lightbulb size={14} />
+            <BouncyIconWrap name="ft-samples-bulb">
+              <Lightbulb size={14} />
+            </BouncyIconWrap>
             נוסחאות לדוגמה
           </label>
           <div className="tester-sample-buttons">
@@ -218,7 +225,9 @@ export default function FormulaTester({ initialFormula }) {
             >
               {result.success ? (
                 <>
-                  <CheckCircle2 size={20} />
+                  <BouncyIconWrap name="ft-result-success">
+                    <CheckCircle2 size={20} />
+                  </BouncyIconWrap>
                   <div className="tester-result-content">
                     <span className="tester-result-label">תוצאה</span>
                     <span className="tester-result-value">
@@ -230,7 +239,9 @@ export default function FormulaTester({ initialFormula }) {
                 </>
               ) : (
                 <>
-                  <AlertCircle size={20} />
+                  <BouncyIconWrap name="ft-result-error">
+                    <AlertCircle size={20} />
+                  </BouncyIconWrap>
                   <div className="tester-result-content">
                     <span className="tester-result-label">שגיאה</span>
                     <span className="tester-result-error">{result.error}</span>

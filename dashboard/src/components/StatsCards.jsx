@@ -41,9 +41,8 @@ export default function StatsCards() {
             className={`glass stat-card ${tone.glow}`}
             initial={false}
             whileHover={{
-              y: -6,
-              scale: 1.02,
-              transition: { type: 'spring', stiffness: 380, damping: 28 },
+              scale: 1.015,
+              transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
             }}
           >
             <div className="stat-top">
@@ -52,27 +51,10 @@ export default function StatsCards() {
                 className="stat-icon stat-icon--motion"
                 aria-hidden="true"
                 initial={false}
-                animate={
-                  iconPlay
-                    ? {
-                        /* קפיצה עדינה: מעלה → נחיתה קלה מעל המקור → עוד “באנץ” */
-                        y: [0, -7, 1.4, -4, 0],
-                        rotate: [0, 7, -5, 3, 0],
-                        scale: [1, 1.1, 0.96, 1.04, 1],
-                      }
-                    : { y: 0, rotate: 0, scale: 1 }
-                }
-                transition={{
-                  duration: loopDur,
-                  repeat: Infinity,
-                  ease: [0.4, 0, 0.2, 1],
-                  times: [0, 0.2, 0.38, 0.6, 1],
-                  delay: phaseDelay,
-                }}
                 whileHover={
                   reduce
                     ? {}
-                    : { scale: 1.16, y: -2, transition: { type: 'spring', stiffness: 480, damping: 16 } }
+                    : { scale: 1.05, transition: { type: 'spring', stiffness: 480, damping: 22 } }
                 }
               >
                 <motion.span

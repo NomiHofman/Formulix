@@ -5,6 +5,7 @@ import {
   MessageSquare, Lightbulb, ArrowLeft
 } from 'lucide-react';
 import { scaleIn } from '../utils/scrollAnimations';
+import BouncyIconWrap from './BouncyIconWrap';
 
 /* =========================================================
    AIFormulaAssistant (Hebrew)
@@ -174,7 +175,9 @@ export default function AIFormulaAssistant({ onFormulaGenerated }) {
       <div className="panel-header">
         <div>
           <div className="panel-title">
-            <Bot size={20} className="icon-cyan" />
+            <BouncyIconWrap name="ai-header-bot">
+              <Bot size={20} className="icon-cyan" />
+            </BouncyIconWrap>
             עוזר AI ליצירת נוסחאות
           </div>
           <div className="panel-subtitle">
@@ -228,7 +231,9 @@ export default function AIFormulaAssistant({ onFormulaGenerated }) {
       {/* Examples */}
       <div className="ai-examples">
         <span className="ai-examples-label">
-          <Lightbulb size={14} />
+          <BouncyIconWrap name="ai-examples-bulb">
+            <Lightbulb size={14} />
+          </BouncyIconWrap>
           דוגמאות לנסות:
         </span>
         <div className="ai-examples-list">
@@ -248,7 +253,9 @@ export default function AIFormulaAssistant({ onFormulaGenerated }) {
       {/* Input */}
       <div className="ai-input-section">
         <div className="ai-input-wrap">
-          <MessageSquare size={18} className="ai-input-icon" />
+          <BouncyIconWrap name="ai-prompt-messagesq" className="ai-input-icon">
+            <MessageSquare size={18} />
+          </BouncyIconWrap>
           <input
             type="text"
             className="ai-input"
@@ -290,7 +297,9 @@ export default function AIFormulaAssistant({ onFormulaGenerated }) {
             {result.success ? (
               <>
                 <div className="ai-result-header">
-                  <Wand2 size={18} />
+                  <BouncyIconWrap name="ai-result-wand">
+                    <Wand2 size={18} />
+                  </BouncyIconWrap>
                   <span>הנוסחה שנוצרה:</span>
                 </div>
                 <div className="ai-result-formula">

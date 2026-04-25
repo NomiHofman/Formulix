@@ -39,7 +39,9 @@ export default function DashboardBelowFold({ aiGeneratedFormula, onFormulaFromAI
 
       <footer className="footer">
         <span>FORMULIX · v1.0 · Dynamic Tariff Benchmark</span>
-        <span>© {new Date().getFullYear()} · Built with React · Recharts · Framer Motion · OpenAI</span>
+        <span>
+          {`© ${new Date().getFullYear()} · Built by Nomi Hofman with React · Recharts · Framer Motion · OpenAI`}
+        </span>
       </footer>
     </>
   );

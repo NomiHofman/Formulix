@@ -10,6 +10,7 @@ import {
   staggerChildBig,
   fadeUp,
 } from '../utils/scrollAnimations';
+import BouncyIconWrap from './BouncyIconWrap';
 
 const methods = [
   {
@@ -147,7 +148,9 @@ function MethodCard({ method }) {
       {/* Header — always visible */}
       <div className="method-header">
         <div className="method-icon" style={{ background: `${method.color}22`, color: method.color }}>
-          <Icon size={24} strokeWidth={1.8} />
+          <BouncyIconWrap name={`me-card-${method.id}`}>
+            <Icon size={24} strokeWidth={1.8} />
+          </BouncyIconWrap>
         </div>
         <div className="method-titles">
           <h3 className="method-name" style={{ color: method.color }}>{method.name}</h3>
@@ -253,7 +256,9 @@ export default function MethodsExplainer() {
       <div className="methods-header">
         <div>
           <h2 className="methods-title">
-            <ArrowLeftRight size={24} className="icon-violet" />
+            <BouncyIconWrap name="me-compare-title">
+              <ArrowLeftRight size={24} className="icon-violet" />
+            </BouncyIconWrap>
             השוואת שיטות החישוב
           </h2>
           <p className="methods-subtitle">
@@ -279,7 +284,9 @@ export default function MethodsExplainer() {
       >
         <div className="recommendation-content">
           <div className="recommendation-icon">
-            <CheckCircle2 size={32} />
+            <BouncyIconWrap name="me-recommendation-check">
+              <CheckCircle2 size={32} />
+            </BouncyIconWrap>
           </div>
           <div>
             <h3>המלצה: SQL Dynamic</h3>
