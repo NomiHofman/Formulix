@@ -190,7 +190,10 @@ function MethodCard({ method }) {
             style={{ overflow: 'hidden' }}
           >
             <div className="method-section">
-              <h4><Zap size={14} /> איך זה עובד</h4>
+              <h4>
+                <Zap size={14} />
+                {' '}איך זה עובד
+              </h4>
               <ol className="method-steps">
                 {method.howItWorks.map((step, i) => (
                   <li key={i}>{step}</li>
@@ -203,7 +206,10 @@ function MethodCard({ method }) {
                 <h4 style={{ color: '#22ff88' }}>יתרונות</h4>
                 <ul>
                   {method.pros.map((pro, i) => (
-                    <li key={i}><CheckCircle2 size={12} /> {pro}</li>
+                    <li key={i}>
+                      <CheckCircle2 size={12} />
+                      {' '}{pro}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -218,7 +224,10 @@ function MethodCard({ method }) {
             </div>
 
             <div className="method-section">
-              <h4><Server size={14} /> טכנולוגיות</h4>
+              <h4>
+                <Server size={14} />
+                {' '}טכנולוגיות
+              </h4>
               <div className="method-tags">
                 {method.techStack.map((tech, i) => (
                   <span key={i} className="method-tag" style={{ borderColor: `${method.color}55` }}>
@@ -256,9 +265,7 @@ export default function MethodsExplainer() {
       <div className="methods-header">
         <div>
           <h2 className="methods-title">
-            <BouncyIconWrap name="me-compare-title">
-              <ArrowLeftRight size={24} className="icon-violet" />
-            </BouncyIconWrap>
+            <ArrowLeftRight size={24} className="icon-violet" />
             השוואת שיטות החישוב
           </h2>
           <p className="methods-subtitle">
@@ -294,10 +301,6 @@ export default function MethodsExplainer() {
               על בסיס הבדיקות שבוצעו, שיטת <strong>SQL Dynamic</strong> מומלצת כשיטה העיקרית 
               לחישוב נוסחאות דינמיות. היא מספקת את הביצועים הטובים ביותר (9.8 שניות על מיליון רשומות),
               צורכת מינימום זיכרון, ומייצרת תוצאות זהות לכל השיטות האחרות.
-            </p>
-            <p style={{ marginTop: 8, color: 'var(--text-mute)', fontSize: 13 }}>
-              עם זאת, לנוסחאות מורכבות במיוחד או כאלה הדורשות לוגיקה עסקית מתקדמת, 
-              שיטת Roslyn מספקת גמישות רבה יותר.
             </p>
           </div>
         </div>

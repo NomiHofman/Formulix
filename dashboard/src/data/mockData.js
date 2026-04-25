@@ -36,11 +36,12 @@ export const topStats = [
     tone: 'violet'
   },
   {
-    id: 'runtime',
-    label: 'זמן ריצה ממוצע',
-    value: 5.74,
-    displayValue: '5.74s',
-    delta: 'לנוסחה על 1M רשומות',
+    id: 'speedup',
+    label: 'פער מהירות',
+    num: 2.3,
+    suffix: 'x',
+    displayValue: '×2.3',
+    delta: 'בין המנוע המהיר לאיטי ביותר',
     icon: 'Timer',
     tone: 'cyan'
   }

@@ -2,10 +2,15 @@
  * Brand mark for FORMULIX — a stylized Σ (sigma) with three nodes.
  * Reused in the header badge and the loading overlay.
  */
-export default function FormulixLogo({ size = 34, idSuffix = '' }) {
+export default function FormulixLogo({ size = 34, idSuffix = '', className = '' }) {
   const s = idSuffix;
+  const floatKind = s
+    ? 'formulix-logo--float formulix-logo--float--loader'
+    : 'formulix-logo--float';
+  const rootClass = `${floatKind}${className ? ` ${className}` : ''}`.trim();
   return (
     <svg
+      className={rootClass}
       width={size}
       height={size}
       viewBox="0 0 40 40"

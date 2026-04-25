@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, RotateCcw, Trophy, Zap } from 'lucide-react';
+import BouncyIconWrap from './BouncyIconWrap';
 import { useData } from '../data/RunDataContext';
 import { friendlyName } from '../data/methodNames';
 import { fadeUp } from '../utils/scrollAnimations';
@@ -89,7 +90,9 @@ export default function EngineRace() {
       <div className="panel-header">
         <div>
           <div className="panel-title">
-            <Zap size={18} className="icon-pink" />
+            <BouncyIconWrap name="er-panel-zap">
+              <Zap size={18} className="icon-pink" />
+            </BouncyIconWrap>
             מרוץ מנועי חישוב
           </div>
           <div className="panel-subtitle">
@@ -108,7 +111,7 @@ export default function EngineRace() {
             {finished ? 'שוב!' : 'התחל מרוץ'}
           </motion.button>
           {(finished || racing) && (
-            <button className="race-btn reset" onClick={resetRace}>
+            <button type="button" className="race-btn reset" onClick={resetRace}>
               <RotateCcw size={14} />
             </button>
           )}

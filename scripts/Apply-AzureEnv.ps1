@@ -1,13 +1,13 @@
-# טוען משתני FORMULIX_DB_* מקובץ azure.env לתוך תהליך PowerShell הנוכחי בלבד.
-# שימוש: מתוך תיקיית שורש הפרויקט (איפה ש-azure.env):  . .\scripts\Apply-AzureEnv.ps1
+# Load FORMULIX_DB_* from azure.env into the current PowerShell process only.
+# Usage (from repo root):  . .\scripts\Apply-AzureEnv.ps1
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $envFile = Join-Path $root 'azure.env'
 
 if (-not (Test-Path $envFile)) {
-    Write-Warning "לא נמצא $envFile"
-    Write-Host "העתיקי azure.env.example ל-azure.env, מלאי שרת/משתמש/סיסמה, והריצי שוב."
+    Write-Warning "Missing: $envFile"
+    Write-Host "Copy azure.env.example to azure.env and fill server, user, password."
     exit 1
 }
 
@@ -24,5 +24,5 @@ Get-Content $envFile -Encoding UTF8 | ForEach-Object {
     $count++
 }
 
-Write-Host "נטענו $count משתני סביבה מ-azure.env (סשן נוכחי בלבד)."
-Write-Host "ודאי: Azure SQL → Networking → Firewall rule ל-IP של המחשב."
+Write-Host "Loaded $count variables from azure.env (current process only)."
+Write-Host "Azure SQL: add client IP under Networking / Firewall if connection fails."

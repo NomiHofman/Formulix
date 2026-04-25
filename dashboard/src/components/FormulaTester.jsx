@@ -8,13 +8,6 @@ import {
 import { scaleIn } from '../utils/scrollAnimations';
 import BouncyIconWrap from './BouncyIconWrap';
 
-/* =========================================================
-   FormulaTester (Hebrew)
-   Interactive formula testing sandbox - allows users to
-   enter custom formulas and see results in real-time.
-   Can receive formulas from the AI Assistant!
-   ========================================================= */
-
 const SAMPLE_FORMULAS = [
   { formula: 'a + b', description: 'חיבור פשוט' },
   { formula: '(a + b) * 8', description: 'חיבור וכפל' },
@@ -56,13 +49,11 @@ export default function FormulaTester({ initialFormula }) {
   const [formula, setFormula] = useState('a + b');
   const [fromAI, setFromAI] = useState(false);
 
-  // Update formula when AI generates one
   useEffect(() => {
     if (initialFormula) {
       setFormula(initialFormula);
       setFromAI(true);
       setResult(null);
-      // Auto-clear the AI indicator after 5 seconds
       setTimeout(() => setFromAI(false), 5000);
     }
   }, [initialFormula]);
@@ -115,7 +106,7 @@ export default function FormulaTester({ initialFormula }) {
             בדוק נוסחאות בזמן אמת - הזן נוסחה וערכים וראה את התוצאה
           </div>
         </div>
-        <button className="tester-reset-btn" onClick={handleReset}>
+        <button type="button" className="tester-reset-btn" onClick={handleReset}>
           <RotateCcw size={14} />
           אפס
         </button>
@@ -125,9 +116,7 @@ export default function FormulaTester({ initialFormula }) {
         {/* Formula Input */}
         <div className="tester-formula-section">
           <label className="tester-label">
-            <BouncyIconWrap name="ft-label-calculator">
-              <Calculator size={14} />
-            </BouncyIconWrap>
+            <Calculator size={14} />
             נוסחה
             {fromAI && (
               <span className="from-ai-badge">
@@ -175,9 +164,7 @@ export default function FormulaTester({ initialFormula }) {
         {/* Sample Formulas */}
         <div className="tester-samples">
           <label className="tester-label">
-            <BouncyIconWrap name="ft-samples-bulb">
-              <Lightbulb size={14} />
-            </BouncyIconWrap>
+            <Lightbulb size={14} />
             נוסחאות לדוגמה
           </label>
           <div className="tester-sample-buttons">
@@ -225,9 +212,7 @@ export default function FormulaTester({ initialFormula }) {
             >
               {result.success ? (
                 <>
-                  <BouncyIconWrap name="ft-result-success">
-                    <CheckCircle2 size={20} />
-                  </BouncyIconWrap>
+                  <CheckCircle2 size={20} />
                   <div className="tester-result-content">
                     <span className="tester-result-label">תוצאה</span>
                     <span className="tester-result-value">
@@ -239,9 +224,7 @@ export default function FormulaTester({ initialFormula }) {
                 </>
               ) : (
                 <>
-                  <BouncyIconWrap name="ft-result-error">
-                    <AlertCircle size={20} />
-                  </BouncyIconWrap>
+                  <AlertCircle size={20} />
                   <div className="tester-result-content">
                     <span className="tester-result-label">שגיאה</span>
                     <span className="tester-result-error">{result.error}</span>

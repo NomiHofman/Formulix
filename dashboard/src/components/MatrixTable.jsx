@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Table2, CheckCircle2, MousePointerClick, Plus } from 'lucide-react';
+import BouncyIconWrap from './BouncyIconWrap';
 import { useData } from '../data/RunDataContext';
 import { friendlyName } from '../data/methodNames';
 import FormulaModal from './FormulaModal';
@@ -57,7 +58,9 @@ export default function MatrixTable() {
         <div className="panel-header">
           <div>
             <div className="panel-title">
-              <Table2 size={18} className="icon-cyan" />
+              <BouncyIconWrap name="mx-panel-table">
+                <Table2 size={18} className="icon-cyan" />
+              </BouncyIconWrap>
               t_result · מטריצת חישובים
             </div>
             <div className="panel-subtitle">

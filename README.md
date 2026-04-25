@@ -36,6 +36,9 @@
 לפי מסמך המבחן: **קוד + סקריפטים**, **תצלומי מסך ממסד הנתונים**, **דוח מסכם**, **קישור GitHub** לריפו אישי, **מסך דיווח בענן** (קישור עובד).  
 רשימה מפורטת, מיפוי עמידה בדרישות, ורשימת צילומי DB — ב־**[`docs/SUBMISSION_CHECKLIST.md`](docs/SUBMISSION_CHECKLIST.md)**.
 
+> **לידיעת הבודק — איפה ה־DB “האמיתי”:**  
+> בפרויקט זה **מסד הנתונים התפעולי להגשה/לדמו החי** הוא **Azure SQL Database** (ענן). הדשבורד ב-Vercel והרצות מול `FORMULIX_DB_*` מצביעים על **אותו** DB ב-Azure. **LocalDB** אינו מחליף את מסד ההגשה; הוא **אופציה מקומית** לבודק/מפתח (הרצת `FormulixCreate.sql`, בלי סיסמת Azure — ראו להלן "משתני סביבה").
+
 > **סנכרון Git:** שינויים אצלך בדיסק (כולל אופטימיזציית מנועים, `AzureOptimizeFast`, ניקוי סודות) **אינם** נראים בבודק עד `git add` → `commit` → `git push` ל-`main`. אחרי push, ודאי ב-GitHub שהקבצים עודכנו.
 
 ### הבהרה לבודק: Azure + Vercel (למה זמני ריצה "ארוכים" הם לגיטימיים)
@@ -126,6 +129,8 @@ $env:FORMULIX_DB_ODBC      = "<ODBC Driver 17/18, אותו DB ומשתמש>"
 ```
 
 **אחרי `git pull` — אם הכל “לא מקושר ל-DB”:** ב-repo אין מחרוזות חיבור (by design). צרי `azure.env` מול [`azure.env.example`](azure.env.example) והריצי `Set-Location` לתיקיית הפרויקט ואז: `. .\scripts\Apply-AzureEnv.ps1` לפני כל מנוע.
+
+**למה אי אפשר “להעתיק” ל-DB בדיוק את אחרי-הרצה ב-Azure, בלי export:** הזמנים תלויים ב-DTU, רשת ומכונה — אי אפשר לנבא אותם מבחוץ. **לדמו/לבודק** (בלי גישה ל-DB ב-Azure): אחרי `FormulixCreate` + `AddComplexFormulas` הריצי ב-SSMS/Query Editor [`DB/AzureSampleLogs.sql`](DB/AzureSampleLogs.sql) — זה **מייצר `t_log` מייצג** (20 נוסחאות × 4 שיטות) עם **זמנים אופייניים**, לא מספרי מד-מד מ-Azure. **במקביל** — מומלץ להריץ את המנועים מול **LocalDB** כדי לוודא שהקוד תקין; `t_results` ה“אמיתי” (מיליוני שורות) **נבנה בזמן ריצה** על-ידי המנועים, לא בזינון ידני. לעדכון JSON לדשבורד מקומי: `py -3 tools\export_logs.py` (אחרי שיש `t_log`).
 
 **חומת אzure:** אפשרי `timeout` / 500 – הוסיפי *Client IP* (מקומי) או IP יוצא של Vercel (פרודקשן), ראו `RUN_FOUR_ENGINES.md`.
 

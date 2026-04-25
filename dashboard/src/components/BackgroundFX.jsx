@@ -11,6 +11,7 @@ import {
   Sigma,
   Activity,
 } from 'lucide-react';
+import BouncyIconWrap from './BouncyIconWrap';
 
 /**
  * רקע: שכבה שקטה + רשת עדינה + אייקונים “מעופפים” + שדה נקודות.
@@ -62,12 +63,14 @@ export default function BackgroundFX() {
                 color: row.color,
               }}
             >
-              <row.Icon
-                className="floating-icon-svg"
-                size={24}
-                strokeWidth={1.75}
-                aria-hidden="true"
-              />
+              <BouncyIconWrap name={`bg-float-${i}`} className="floating-icon-bouncy">
+                <row.Icon
+                  className="floating-icon-svg"
+                  size={24}
+                  strokeWidth={1.75}
+                  aria-hidden="true"
+                />
+              </BouncyIconWrap>
             </div>
           ))}
         </div>

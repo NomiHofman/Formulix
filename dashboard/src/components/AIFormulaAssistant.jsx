@@ -7,16 +7,6 @@ import {
 import { scaleIn } from '../utils/scrollAnimations';
 import BouncyIconWrap from './BouncyIconWrap';
 
-/* =========================================================
-   AIFormulaAssistant (Hebrew)
-   
-   AI-powered natural language to formula converter.
-   Users can describe what they want in Hebrew and the AI
-   converts it to a valid formula.
-   
-   This demonstrates practical AI integration in the system!
-   ========================================================= */
-
 const EXAMPLE_PROMPTS = [
   { text: 'חשב את סכום הריבועים של a ו-b', icon: '📐' },
   { text: 'מצא את הממוצע של כל המשתנים', icon: '📊' },
@@ -231,9 +221,7 @@ export default function AIFormulaAssistant({ onFormulaGenerated }) {
       {/* Examples */}
       <div className="ai-examples">
         <span className="ai-examples-label">
-          <BouncyIconWrap name="ai-examples-bulb">
-            <Lightbulb size={14} />
-          </BouncyIconWrap>
+          <Lightbulb size={14} />
           דוגמאות לנסות:
         </span>
         <div className="ai-examples-list">
@@ -253,9 +241,9 @@ export default function AIFormulaAssistant({ onFormulaGenerated }) {
       {/* Input */}
       <div className="ai-input-section">
         <div className="ai-input-wrap">
-          <BouncyIconWrap name="ai-prompt-messagesq" className="ai-input-icon">
+          <span className="ai-input-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
             <MessageSquare size={18} />
-          </BouncyIconWrap>
+          </span>
           <input
             type="text"
             className="ai-input"
@@ -297,9 +285,7 @@ export default function AIFormulaAssistant({ onFormulaGenerated }) {
             {result.success ? (
               <>
                 <div className="ai-result-header">
-                  <BouncyIconWrap name="ai-result-wand">
-                    <Wand2 size={18} />
-                  </BouncyIconWrap>
+                  <Wand2 size={18} />
                   <span>הנוסחה שנוצרה:</span>
                 </div>
                 <div className="ai-result-formula">

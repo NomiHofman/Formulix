@@ -80,10 +80,12 @@ function buildTopStats(dataCount, summary, formulaCount) {
   const totalOps = dataCount * formulaCount * methods.length;
 
   const avgTimes = methods.map((m) => summary[m].avg);
-  const overallAvg =
-    avgTimes.length > 0
-      ? avgTimes.reduce((a, b) => a + b, 0) / avgTimes.length
-      : null;
+  const sorted = [...avgTimes].sort((a, b) => a - b);
+  const fastest = sorted[0];
+  const slowest = sorted[sorted.length - 1];
+  const speedupX = fastest > 0 && slowest > 0
+    ? (slowest / fastest).toFixed(1)
+    : null;
 
   return [
     {
@@ -117,11 +119,12 @@ function buildTopStats(dataCount, summary, formulaCount) {
       tone: 'violet',
     },
     {
-      id: 'runtime',
-      label: 'זמן ריצה ממוצע',
-      value: overallAvg ?? null,
-      displayValue: formatDuration(overallAvg),
-      delta: 'לנוסחה על 1M רשומות',
+      id: 'speedup',
+      label: 'פער מהירות',
+      num: speedupX ? parseFloat(speedupX) : 0,
+      suffix: 'x',
+      displayValue: speedupX ? `×${speedupX}` : '—',
+      delta: 'בין המנוע המהיר לאיטי ביותר',
       icon: 'Timer',
       tone: 'cyan',
     },

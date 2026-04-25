@@ -99,7 +99,7 @@ function RuntimeChart() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div className="chart-type-toggle">
-            {CHART_TYPES.map(ct => {
+            {CHART_TYPES.map((ct) => {
               const Icon = ct.icon;
               return (
                 <button
@@ -128,89 +128,86 @@ function RuntimeChart() {
         </div>
       )}
 
-      <div
-        className="runtime-chart-plot panel-chart-plot--sweep"
-        style={{ width: '100%', height: 340, direction: 'ltr' }}
-      >
-        <ResponsiveContainer debounce={80}>
-          {chartType === 'area' ? (
-            <AreaChart
-              key={chartAnimKey}
-              data={series}
-              margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
-            >
-              <defs>
-                {engines.map((e) => (
-                  <linearGradient key={e} id={`grad-${e.replace(/\s/g, '')}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%"   stopColor={colors[e]} stopOpacity={0.55} />
-                    <stop offset="100%" stopColor={colors[e]} stopOpacity={0}    />
-                  </linearGradient>
-                ))}
-              </defs>
+      <div className="panel-chart-plot panel-chart-plot--sweep" key={chartAnimKey}>
+        {chartType === 'area' && (
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart data={series} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
               <XAxis dataKey="batch" tickLine={false} axisLine={false} dy={8} />
               <YAxis tickLine={false} axisLine={false} tickFormatter={(v) => `${v}s`} width={50} />
               <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.15)', strokeWidth: 1 }} />
-              {engines.map((e, i) => (
+              {engines.map((e, idx) => (
                 <Area
-                  key={e} type="monotone" dataKey={e}
-                  stroke={colors[e]} strokeWidth={2.2}
-                  fill={`url(#grad-${e.replace(/\s/g, '')})`}
-                  dot={false} activeDot={{ r: 5, strokeWidth: 0, fill: colors[e] }}
+                  key={e}
+                  type="monotone"
+                  dataKey={e}
+                  stroke={colors[e]}
+                  fill={colors[e]}
+                  fillOpacity={0.12}
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 5, strokeWidth: 2, fill: '#0a0a0f' }}
                   isAnimationActive
-                  animationEasing="ease-out"
-                  animationBegin={i * areaStagger}
+                  animationBegin={idx * areaStagger}
                   animationDuration={areaBarDuration}
+                  animationEasing="ease-out"
                 />
               ))}
             </AreaChart>
-          ) : chartType === 'bar' ? (
-            <BarChart
-              key={chartAnimKey}
-              data={series}
-              margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
-            >
+          </ResponsiveContainer>
+        )}
+
+        {chartType === 'bar' && (
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={series} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
               <XAxis dataKey="batch" tickLine={false} axisLine={false} dy={8} />
               <YAxis tickLine={false} axisLine={false} tickFormatter={(v) => `${v}s`} width={50} />
               <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-              {engines.map((e, i) => (
+              {engines.map((e, idx) => (
                 <Bar
-                  key={e} dataKey={e} fill={colors[e]}
-                  radius={[4, 4, 0, 0]} opacity={0.85}
+                  key={e}
+                  dataKey={e}
+                  fill={colors[e]}
+                  fillOpacity={0.8}
+                  radius={[6, 6, 0, 0]}
                   isAnimationActive
-                  animationEasing="ease-out"
-                  animationBegin={i * barStagger}
+                  animationBegin={idx * barStagger}
                   animationDuration={areaBarDuration}
+                  animationEasing="ease-out"
                 />
               ))}
             </BarChart>
-          ) : (
-            <RadarChart
-              key={chartAnimKey}
-              data={radarData} cx="50%" cy="50%" outerRadius="75%"
-            >
+          </ResponsiveContainer>
+        )}
+
+        {chartType === 'radar' && (
+          <ResponsiveContainer width="100%" height={310}>
+            <RadarChart data={radarData} outerRadius="75%">
               <PolarGrid stroke="rgba(255,255,255,0.1)" />
               <PolarAngleAxis dataKey="metric" tick={{ fill: '#a2a8b8', fontSize: 12 }} />
               <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
-              {engines.map((e, i) => (
+              {engines.map((e) => (
                 <Radar
-                  key={e} name={friendlyName(e)} dataKey={e}
-                  stroke={colors[e]} fill={colors[e]} fillOpacity={0.15}
+                  key={e}
+                  name={friendlyName(e)}
+                  dataKey={e}
+                  stroke={colors[e]}
+                  fill={colors[e]}
+                  fillOpacity={0.15}
                   strokeWidth={2}
                   isAnimationActive
-                  animationEasing="ease-out"
-                  animationBegin={i * 80}
                   animationDuration={radarDuration}
+                  animationEasing="ease-out"
                 />
               ))}
               <RLegend
                 formatter={(v) => friendlyName(v)}
-                wrapperStyle={{ fontSize: 12, color: '#a2a8b8' }}
+                wrapperStyle={{ fontSize: 12, paddingTop: 10 }}
               />
             </RadarChart>
-          )}
-        </ResponsiveContainer>
+          </ResponsiveContainer>
+        )}
       </div>
     </motion.div>
   );

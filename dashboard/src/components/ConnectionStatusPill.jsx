@@ -2,14 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, Database, Clock, Server } from 'lucide-react';
 
-/**
- * Compact status pill that lives inside the header.
- *
- * – Shows a colored pulse dot + short label.
- * – Click opens a popover with detailed source info, snapshot timestamp
- *   and a manual refresh button.
- * – Click outside / Escape closes.
- */
 export default function ConnectionStatusPill({
   source,
   lastRefresh,
@@ -168,17 +160,17 @@ export default function ConnectionStatusPill({
               onClick={handleRefresh}
               disabled={busy}
             >
-              <motion.span
-                animate={busy ? { rotate: 360 } : { rotate: 0 }}
-                transition={{
-                  duration: 0.8,
-                  repeat: busy ? Infinity : 0,
-                  ease: 'linear',
-                }}
-                style={{ display: 'inline-flex' }}
-              >
+              {busy ? (
+                <motion.span
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                  style={{ display: 'inline-flex' }}
+                >
+                  <RefreshCw size={13} strokeWidth={2.2} />
+                </motion.span>
+              ) : (
                 <RefreshCw size={13} strokeWidth={2.2} />
-              </motion.span>
+              )}
               {busy ? 'מרענן…' : 'רענן נתונים'}
             </button>
           </motion.div>

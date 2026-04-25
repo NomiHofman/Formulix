@@ -82,7 +82,10 @@ export default function FormulaModal({ row, methods, colors, onClose }) {
 
         {/* Mini bar chart */}
         <div className="modal-chart-section">
-          <h4><Clock size={14} /> זמני ריצה לפי מנוע</h4>
+          <h4>
+            <Clock size={14} />
+            {' '}זמני ריצה לפי מנוע
+          </h4>
           <div style={{ width: '100%', height: 200, direction: 'ltr' }}>
             <ResponsiveContainer>
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }} layout="vertical">

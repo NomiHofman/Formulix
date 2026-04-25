@@ -117,6 +117,104 @@ body {
 }
 
 /* =========================================================
+   Global icon motion — 6 וריאציות (name+index ב־BouncyIconWrap)
+   ========================================================= */
+@keyframes iconMotion0 {
+  0%,
+  100% { transform: scale(1) rotate(0deg); }
+  20% { transform: scale(1.1) rotate(4deg); }
+  40% { transform: scale(0.94) rotate(-3.5deg); }
+  60% { transform: scale(1.08) rotate(2.5deg); }
+  80% { transform: scale(0.98) rotate(-1.5deg); }
+}
+@keyframes iconMotion1 {
+  0%,
+  100% { transform: translateY(0) scale(1) rotate(0deg); }
+  30% { transform: translateY(-9px) scale(1.06) rotate(2deg); }
+  50% { transform: translateY(-2px) scale(0.98) rotate(-1.5deg); }
+  70% { transform: translateY(-6px) scale(1.03) rotate(1deg); }
+}
+@keyframes iconMotion2 {
+  0%,
+  100% { transform: translateY(0) rotate(0deg); }
+  12% { transform: translateY(-7px) rotate(3deg); }
+  24% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-4px) rotate(-2.5deg); }
+  65% { transform: translateY(0) scale(1.05); }
+}
+@keyframes iconMotion3 {
+  0%,
+  100% { transform: rotate(0deg) translateY(0); }
+  25% { transform: rotate(9deg) translateY(-4px); }
+  50% { transform: rotate(-7deg) translateY(2px); }
+  75% { transform: rotate(4deg) translateY(-2px); }
+}
+@keyframes iconMotion4 {
+  0%,
+  100% { transform: scale(1) translateY(0); }
+  15% { transform: scale(1.11) translateY(-6px); }
+  35% { transform: scale(0.92) translateY(1px); }
+  55% { transform: scale(1.08) translateY(-4px); }
+  80% { transform: scale(1) translateY(0); }
+}
+@keyframes iconMotion5 {
+  0%,
+  100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-7px) scale(1.07) rotate(2.5deg); }
+  55% { transform: translateY(1px) scale(0.96) rotate(-2deg); }
+  75% { transform: translateY(-3px) scale(1.02); }
+}
+
+.icon-motion {
+  transform-origin: 50% 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+.icon-motion--0 { animation: iconMotion0 0.95s ease-in-out infinite; }
+.icon-motion--1 { animation: iconMotion1 1.32s ease-in-out infinite; }
+.icon-motion--2 { animation: iconMotion2 0.7s ease-in-out infinite; }
+.icon-motion--3 { animation: iconMotion3 1.16s ease-in-out infinite; }
+.icon-motion--4 { animation: iconMotion4 0.88s cubic-bezier(0.34, 1.15, 0.64, 1) infinite; }
+.icon-motion--5 { animation: iconMotion5 1.64s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-motion--0,
+  .icon-motion--1,
+  .icon-motion--2,
+  .icon-motion--3,
+  .icon-motion--4,
+  .icon-motion--5,
+  .formulix-logo--float,
+  .formulix-logo--float--loader {
+    animation: none;
+  }
+}
+
+/* =========================================================
+   Brand mark: ריחוף אנכי (header vs loader = קצבים שונים)
+   ========================================================= */
+@keyframes brandLogoFloat {
+  0%,
+  100% { transform: translateY(0); }
+  45% { transform: translateY(-7px); }
+  70% { transform: translateY(-2px); }
+}
+@keyframes brandLogoFloatLoader {
+  0%,
+  100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.03); }
+}
+
+.formulix-logo--float {
+  display: block;
+  transform-origin: 50% 50%;
+  animation: brandLogoFloat 2.4s ease-in-out infinite;
+}
+.formulix-logo--float--loader {
+  animation: brandLogoFloatLoader 1.9s ease-in-out infinite;
+}
+
+/* =========================================================
    Background: floating glow orbs + subtle cyber-grid overlay
    ========================================================= */
 
@@ -562,17 +660,10 @@ body {
   flex-shrink: 0;
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
-.stat-icon__glyph {
-  will-change: opacity;
-}
 @media (hover: hover) and (pointer: fine) {
-  .stat-card:hover .stat-icon--motion {
+  .stat-card:hover .stat-icon--top-static {
     background: rgba(255, 255, 255, 0.1);
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .stat-icon--motion { will-change: auto; }
-  .stat-icon__glyph { will-change: auto; }
 }
 
 .stat-label {
@@ -622,6 +713,58 @@ body {
 .icon-blue   { color: var(--neon-blue); }
 .icon-violet { color: var(--neon-violet); }
 .icon-cyan   { color: var(--neon-cyan); }
+
+/* כרטיסי סטט עליונים — “נשימה” בצבע, דפוס שונה בכל גוון */
+@keyframes statIconTintPink {
+  0%,
+  100% { color: var(--neon-pink); }
+  50% { color: #ff6ba8; }
+}
+@keyframes statIconTintBlue {
+  0%,
+  100% { color: var(--neon-blue); }
+  25% { color: #6bb5ff; }
+  50% { color: var(--neon-blue); }
+  75% { color: #8cc4ff; }
+}
+@keyframes statIconTintViolet {
+  0%,
+  100% { color: var(--neon-violet); }
+  33% { color: #c4a0ff; }
+  66% { color: #7d4dff; }
+}
+@keyframes statIconTintCyan {
+  0%,
+  100% { color: var(--neon-cyan); }
+  40% { color: #9ff9ff; }
+  80% { color: #00b8d4; }
+}
+
+.stat-icon--top-static .icon-pink {
+  animation: statIconTintPink 2.75s ease-in-out infinite;
+}
+.stat-icon--top-static .icon-blue {
+  animation: statIconTintBlue 3.55s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+.stat-icon--top-static .icon-violet {
+  animation: statIconTintViolet 3.15s ease-in-out infinite;
+}
+.stat-icon--top-static .icon-cyan {
+  animation: statIconTintCyan 2.2s cubic-bezier(0.45, 0.05, 0.25, 1) infinite;
+}
+
+.stats-grid .stat-card:nth-child(1) .stat-icon--top-static svg {
+  animation-delay: 0s;
+}
+.stats-grid .stat-card:nth-child(2) .stat-icon--top-static svg {
+  animation-delay: 0.45s;
+}
+.stats-grid .stat-card:nth-child(3) .stat-icon--top-static svg {
+  animation-delay: 0.9s;
+}
+.stats-grid .stat-card:nth-child(4) .stat-icon--top-static svg {
+  animation-delay: 1.35s;
+}
 
 /* =========================================================
    Main Grid (Chart + Insights)
@@ -791,6 +934,41 @@ body {
   border: 1px solid var(--border);
   will-change: transform;
 }
+
+/* אנימציית ריחוף עדינה לאייקוני שורות תובנות — קצב שונה לכל שורה */
+@keyframes insightFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+.insight-row-icon svg {
+  animation: insightFloat ease-in-out infinite;
+}
+.insight-row:nth-child(1) .insight-row-icon svg {
+  animation-duration: 2.1s;
+  animation-delay: 0s;
+}
+.insight-row:nth-child(2) .insight-row-icon svg {
+  animation-duration: 2.7s;
+  animation-delay: -0.4s;
+}
+.insight-row:nth-child(3) .insight-row-icon svg {
+  animation-duration: 1.9s;
+  animation-delay: -1.1s;
+}
+.insight-row:nth-child(4) .insight-row-icon svg {
+  animation-duration: 2.4s;
+  animation-delay: -0.7s;
+}
+.insight-row:nth-child(5) .insight-row-icon svg {
+  animation-duration: 2.2s;
+  animation-delay: -1.5s;
+}
+.insight-row:nth-child(6) .insight-row-icon svg {
+  animation-duration: 2.6s;
+  animation-delay: -0.2s;
+}
+
 /* כותרת תובנות: אייקונים */
 .panel-header .insight-header-icon {
   display: inline-flex;
@@ -799,6 +977,7 @@ body {
   will-change: transform;
 }
 @media (prefers-reduced-motion: reduce) {
+  .insight-row-icon svg { animation: none; }
   .insight-row-icon--motion { will-change: auto; }
   .panel-header .insight-header-icon--motion { will-change: auto; }
 }
@@ -2545,8 +2724,17 @@ body {
   transition: transform 0.25s ease, color 0.2s ease;
 }
 
-.stat-card:hover .stat-icon {
-  transform: scale(1.06);
+@keyframes statIconWiggle {
+  0%   { transform: scale(1) rotate(0deg) translateY(0); }
+  20%  { transform: scale(1.15) rotate(-6deg) translateY(-3px); }
+  40%  { transform: scale(1.05) rotate(5deg) translateY(-1px); }
+  60%  { transform: scale(1.12) rotate(-3deg) translateY(-2px); }
+  80%  { transform: scale(1.02) rotate(2deg) translateY(0); }
+  100% { transform: scale(1) rotate(0deg) translateY(0); }
+}
+
+.stat-card:hover .stat-icon--top-static svg {
+  animation: statIconWiggle 0.55s ease-in-out 0s 1 both;
 }
 
 /* Refresh button spin on hover */
@@ -2618,5 +2806,11 @@ body {
   }
   .method-card:hover {
     transform: none;
+  }
+  .stat-icon--top-static .icon-pink,
+  .stat-icon--top-static .icon-blue,
+  .stat-icon--top-static .icon-violet,
+  .stat-icon--top-static .icon-cyan {
+    animation: none !important;
   }
 }

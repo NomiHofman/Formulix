@@ -1,7 +1,19 @@
 -- =====================================================
--- FORMULIX - נתוני לוג לדוגמה (לדשבורד)
--- הרץ אחרי AzureInsertData.sql
+-- FORMULIX — נתוני t_log מייצגים (לדשבורד / דמו לבודק)
 -- =====================================================
+-- מתי: אחרי שיש t_targil עם נוסחאות 1..20 (FormulixCreate + AddComplexFormulas)
+--        ו-LocalDB / Azure — לא תלוי ב-"AzureInsertData" ספציפית.
+-- מטרה: למלא t_log בזמני ריצה **מייצגים** (סדר-גודל: SQL < Python < Roslyn < AI).
+--        זה **לא** העתקת שורה-בשורה מריצה ב-Azure; לאחר ריצה אמיתית יתקבלו מספרים אחרים.
+-- חזרה: TRUNCATE מוחק לוגים ישנים; אפשר להריץ שוב.
+-- אם אין DB Formulix — שני את שורת ה-USE.
+-- =====================================================
+USE Formulix;
+GO
+
+SET NOCOUNT ON;
+TRUNCATE TABLE t_log;
+GO
 
 -- הכנסת תוצאות benchmark לדוגמה
 INSERT INTO t_log (targil_id, method, run_time) VALUES
