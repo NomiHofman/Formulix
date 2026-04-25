@@ -72,6 +72,11 @@ function RuntimeChart() {
     : [];
 
   const radarData = buildRadarData(summary);
+  const chartAnimKey = `${chartType}-${series.length}-${engines.join(',')}`;
+  const areaBarDuration = 1400;
+  const barStagger = 95;
+  const areaStagger = 110;
+  const radarDuration = 1100;
 
   return (
     <motion.div
@@ -123,10 +128,17 @@ function RuntimeChart() {
         </div>
       )}
 
-      <div style={{ width: '100%', height: 340, direction: 'ltr' }}>
+      <div
+        className="runtime-chart-plot panel-chart-plot--sweep"
+        style={{ width: '100%', height: 340, direction: 'ltr' }}
+      >
         <ResponsiveContainer debounce={80}>
           {chartType === 'area' ? (
-            <AreaChart data={series} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
+            <AreaChart
+              key={chartAnimKey}
+              data={series}
+              margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
+            >
               <defs>
                 {engines.map((e) => (
                   <linearGradient key={e} id={`grad-${e.replace(/\s/g, '')}`} x1="0" y1="0" x2="0" y2="1">
@@ -144,15 +156,20 @@ function RuntimeChart() {
                   key={e} type="monotone" dataKey={e}
                   stroke={colors[e]} strokeWidth={2.2}
                   fill={`url(#grad-${e.replace(/\s/g, '')})`}
-                  dot={false} activeDot={{ r: 5, strokeWidth: 0 }}
+                  dot={false} activeDot={{ r: 5, strokeWidth: 0, fill: colors[e] }}
                   isAnimationActive
-                  animationBegin={i * 70}
-                  animationDuration={650}
+                  animationEasing="ease-out"
+                  animationBegin={i * areaStagger}
+                  animationDuration={areaBarDuration}
                 />
               ))}
             </AreaChart>
           ) : chartType === 'bar' ? (
-            <BarChart data={series} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
+            <BarChart
+              key={chartAnimKey}
+              data={series}
+              margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
+            >
               <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
               <XAxis dataKey="batch" tickLine={false} axisLine={false} dy={8} />
               <YAxis tickLine={false} axisLine={false} tickFormatter={(v) => `${v}s`} width={50} />
@@ -162,23 +179,29 @@ function RuntimeChart() {
                   key={e} dataKey={e} fill={colors[e]}
                   radius={[4, 4, 0, 0]} opacity={0.85}
                   isAnimationActive
-                  animationBegin={i * 55}
-                  animationDuration={550}
+                  animationEasing="ease-out"
+                  animationBegin={i * barStagger}
+                  animationDuration={areaBarDuration}
                 />
               ))}
             </BarChart>
           ) : (
-            <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="75%">
+            <RadarChart
+              key={chartAnimKey}
+              data={radarData} cx="50%" cy="50%" outerRadius="75%"
+            >
               <PolarGrid stroke="rgba(255,255,255,0.1)" />
               <PolarAngleAxis dataKey="metric" tick={{ fill: '#a2a8b8', fontSize: 12 }} />
               <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
-              {engines.map((e) => (
+              {engines.map((e, i) => (
                 <Radar
                   key={e} name={friendlyName(e)} dataKey={e}
                   stroke={colors[e]} fill={colors[e]} fillOpacity={0.15}
                   strokeWidth={2}
                   isAnimationActive
-                  animationDuration={600}
+                  animationEasing="ease-out"
+                  animationBegin={i * 80}
+                  animationDuration={radarDuration}
                 />
               ))}
               <RLegend

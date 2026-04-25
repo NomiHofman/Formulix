@@ -27,6 +27,7 @@ obj/
 .env
 .env.local
 .env.*.local
+azure.env
 **/launchSettings.json
 
 # Logs

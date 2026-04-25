@@ -300,6 +300,58 @@ body {
   }
 }
 
+/* שכבת אטמוספירה: רשת + אייקוני Lucide + נקודות (מעל רקע שטוח, בלי blur כבד) */
+.bg-layer--ambient {
+  background: transparent !important;
+  contain: layout style paint;
+}
+
+.cyber-grid--ambient {
+  opacity: 0.38;
+  animation: gridBreathe 14s ease-in-out infinite alternate;
+}
+
+@keyframes gridBreathe {
+  from { opacity: 0.28; }
+  to   { opacity: 0.48; }
+}
+
+.floating-icon-wrap {
+  position: absolute;
+  bottom: -52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  user-select: none;
+  animation: iconFloat linear infinite;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.floating-icon-svg {
+  opacity: 0.55;
+  filter: drop-shadow(0 0 12px currentColor);
+}
+
+.dot-field--lite {
+  opacity: 0.9;
+}
+
+.bg-dot--lite {
+  width: 5px;
+  height: 5px;
+  background: radial-gradient(circle, var(--neon-cyan) 0%, transparent 70%);
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-layer--ambient {
+    display: none;
+  }
+}
+
 /* =========================================================
    Dot Field — pulsing colored dots
    ========================================================= */
@@ -507,6 +559,21 @@ body {
   place-items: center;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
+}
+.stat-icon__glyph {
+  will-change: opacity;
+}
+@media (hover: hover) and (pointer: fine) {
+  .stat-card:hover .stat-icon--motion {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stat-icon--motion { will-change: auto; }
+  .stat-icon__glyph { will-change: auto; }
 }
 
 .stat-label {
@@ -525,6 +592,18 @@ body {
   letter-spacing: -0.5px;
   direction: ltr;
   text-align: right;
+}
+
+/* מספרי סטט — קריא בלי “פעימה” */
+.stat-figure,
+.stat-figure--text {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.22);
+}
+.stat-figure--text {
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.16);
 }
 
 .stat-delta {
@@ -604,12 +683,17 @@ body {
 
 /* Insights panel */
 .insight-hero {
+  margin-bottom: 0;
   padding: 18px 18px 20px;
   border-radius: var(--radius-md);
   background: linear-gradient(135deg, rgba(255, 0, 122, 0.18), rgba(0, 132, 255, 0.12));
-  border: 1px solid rgba(255, 0, 122, 0.35);
+  border: 1px solid rgba(255, 0, 122, 0.22);
   box-shadow: inset 0 0 40px rgba(255, 0, 122, 0.12);
-  margin-bottom: 18px;
+}
+.insight-hero + .insight-list {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 .insight-hero-label {
   font-size: 11px;
@@ -631,12 +715,55 @@ body {
   line-height: 1.7;
 }
 
+/* פס — מתחת לאזור הגרפים (לא מסתיר את הנתונים) */
+.runtime-chart-plot {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.panel-chart-plot--sweep::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 132, 255, 0.45) 25%,
+    rgba(0, 229, 255, 0.65) 50%,
+    rgba(0, 132, 255, 0.45) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: glowSweepLine 5.5s linear infinite;
+  opacity: 0.5;
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+@keyframes glowSweepLine {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-chart-plot--sweep::after { animation: none; opacity: 0.4; }
+}
+
 .insight-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
+  z-index: 0;
+  padding: 0 0 4px;
 }
 .insight-row {
+  position: relative;
+  z-index: 0;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -644,6 +771,11 @@ body {
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.025);
   border: 1px solid var(--border);
+  will-change: transform;
+}
+/* פאנל תובנות: לא לחתוך שורה מוגדלת במרחף */
+.glass.system-insights-panel {
+  overflow: visible;
 }
 .insight-row-left {
   display: flex;
@@ -658,6 +790,18 @@ body {
   place-items: center;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
+  will-change: transform;
+}
+/* כותרת תובנות: אייקונים */
+.panel-header .insight-header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .insight-row-icon--motion { will-change: auto; }
+  .panel-header .insight-header-icon--motion { will-change: auto; }
 }
 .insight-row-label {
   font-size: 13px;
@@ -2457,20 +2601,12 @@ body {
   box-shadow: 0 0 15px rgba(34, 255, 136, 0.4);
 }
 
-/* Insight row hover */
-.insight-row {
-  transition: all 0.2s ease;
-}
-
-.insight-row:hover {
-  background: rgba(255, 255, 255, 0.04);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .brand-title,
   .brand-badge {
     animation: none !important;
   }
+  .insight-row { will-change: auto; }
   .stat-card,
   .method-card,
   .glass {

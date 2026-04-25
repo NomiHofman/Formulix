@@ -125,6 +125,8 @@ $env:FORMULIX_DB_CONNECTION = "<ADO.NET מ-Azure Portal – כולל סיסמה,
 $env:FORMULIX_DB_ODBC      = "<ODBC Driver 17/18, אותו DB ומשתמש>"
 ```
 
+**אחרי `git pull` — אם הכל “לא מקושר ל-DB”:** ב-repo אין מחרוזות חיבור (by design). צרי `azure.env` מול [`azure.env.example`](azure.env.example) והריצי `Set-Location` לתיקיית הפרויקט ואז: `. .\scripts\Apply-AzureEnv.ps1` לפני כל מנוע.
+
 **חומת אzure:** אפשרי `timeout` / 500 – הוסיפי *Client IP* (מקומי) או IP יוצא של Vercel (פרודקשן), ראו `RUN_FOUR_ENGINES.md`.
 
 ### שלב 0 (אופציונלי, Azure – פעם אחת לסבב “מהיר”)
